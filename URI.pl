@@ -20,8 +20,9 @@ path([X], Y) :- identificatore(X, Y), !.
 path(['/'|Xs], Z) :- path(Xs, Y), !, atom_concat('/', Y, Z).
 path([X|Xs], Z) :- identificatore(X, Y), !, path(Xs, R), atom_concat(Y, R, Z).
 
-terna([X|Xs], N) :- N > 0, digit(X), terna(Xs,P), N is P + 1.
-
+terna(X, Y) :- gruppo(X, Y, 3). 
+gruppo([],'',0).
+gruppo([X|Xs], S, N) :- write(X), N > 0, digit(X), gruppo(Xs, T, P), N is P + 1, atom_concat(X,T,S).
 
 
 reserved(C) :- gen-delims(C); sub-delims(C).
