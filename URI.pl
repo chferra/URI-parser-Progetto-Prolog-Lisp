@@ -20,9 +20,9 @@ path([X], Y) :- identificatore(X, Y), !.
 path(['/'|Xs], Z) :- path(Xs, Y), !, atom_concat('/', Y, Z).
 path([X|Xs], Z) :- identificatore(X, Y), !, path(Xs, R), atom_concat(Y, R, Z).
 
-terna(X, Y, Z, R) :- digit(X), digit(Y), digit(Z), R is X * 100 + Y * 10 + Z, R >= 0, R =< 255.
+terna([X|Xs], N) :- N > 0, digit(X), terna(Xs,P), N is P + 1.
 
-indirizzo-ip([X|Xs],Y) :- X 
+
 
 reserved(C) :- gen-delims(C); sub-delims(C).
 gen-delims(C) :- member(C, [':','/','?','#','[',']','@']).
