@@ -1,14 +1,27 @@
 uri(S, A).
 
-uri_parse(L, uri(S,A)) :- string_chars(L, URI), scheme(URI, URIexcS, S), authority(URIexcS, URIexcSA, A).
+uri_parse(L, uri(S,A)) :- 
+						string_chars(L, URI), 
+						scheme(URI, URIexcS, S)
+						authority(URIexcS, URIexcSA, A).
 
-scheme([':'|T], T, '') :- !.
-scheme([X|Xs], Rest, Result) :- identificatore(X), !, scheme(Xs, Rest, T), atom_concat(X,T,Result).
+scheme(X, Rest, Result) :- identificatore(X, [':'|Rest], Result).
 
-authority([], T, '') :- !.
-authority([X|Xs], Rest, Result) :- !, authority(Xs, Rest, T), atom_concat(X, T, Result).
+authority(['/','/'|Xs], Rest, UI, H, P) :- 
+								userinfo(Xs, ['@'|Rest_excUI], UI), !, 
+								host(Rest_excUI, [':'|Rest_excUIH], H), !,
+								port(Rest_excUIH, Rest, P), !.								 
 
-identificatore(X) :- non_member(X, ['/','?','#','@',':']), !, carattere(X).
+
+identificatore(X, Rest, Result) :- caratteri(X, Rest, Result, ['/','?','#','@',':']).
+
+caratteri([],[],'',_).
+caratteri([C|Cs], Rest, Result, Filtri) :- 
+								non_member(C,Filtri), !,
+								carattere(C), !, 
+								caratteri(Cs, Rest, R, Filtri), !,
+								atom_concat(C, R, Result).
+caratteri(Cs, Rest, '', _).
 
 carattere(C) :- reserved(C); unreserved(C).
 
