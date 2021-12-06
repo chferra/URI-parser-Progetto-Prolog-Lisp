@@ -1,5 +1,10 @@
 inputTxt(T, X) :- string_chars(T, L), path(L, X).
 
+uri(Scheme, Userinfo, Host, Port, Path, Query, Fragment).
+
+
+
+
 
 fragment(X, Y) :- caratteri(X, Y, []).
 identificatore(X, Y) :- caratteri(X, Y, ['/','?','#','@',':']).
@@ -16,13 +21,14 @@ port([D|Ds], Y) :- digit(D), !, port(Ds, R), atom_concat(D, R, Y).
 
 digit(C) :- atom_number(C, D), D >= 0, D =< 9, !.
 
+
 path([X], Y) :- identificatore(X, Y), !.
 path(['/'|Xs], Z) :- path(Xs, Y), !, atom_concat('/', Y, Z).
 path([X|Xs], Z) :- identificatore(X, Y), !, path(Xs, R), atom_concat(Y, R, Z).
 
-terna(X, Y) :- gruppo(X, Y, 3). 
-gruppo([],'',0).
-gruppo([X|Xs], S, N) :- write(X), N > 0, digit(X), gruppo(Xs, T, P), N is P + 1, atom_concat(X,T,S).
+%terna(X, Y) :- gruppo(X, Y, 3). 
+%gruppo([],'',0).
+%gruppo([X|Xs], S, N) :- write(X), N > 0, digit(X), gruppo(Xs, T, P), N is P + 1, atom_concat(X,T,S).
 
 
 reserved(C) :- gen-delims(C); sub-delims(C).
