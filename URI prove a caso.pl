@@ -36,7 +36,6 @@ inputTxt(T, Rest, Result) :- string_chars(T, L), port(L, Rest, Result).
 port(D, Rest, Result) :- digits(D, Rest, Result), Result \= '', !.
 port(X, Rest, 80).
 
-%caratteri([],[],'',_).
 caratteri([C|Cs], Rest, Result, Filtri) :- 
 								non_member(C,Filtri), !,
 								carattere(C), !, 
