@@ -9,17 +9,12 @@ uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 scheme(X, Rest, Result) :- identificatore(X, [':'|Rest], Result).
 
 authority(['/','/'|Xs], Rest, UI, H, P) :-
-								userinfo(Xs, ['@'|Rest_excUI], UI), 
-								host(Rest_excUI, [':'|Rest_excUIH], H),
-								port(Rest_excUIH, Rest, P), !.
-authority(['/','/'|Xs], Rest, UI, H, 80) :-
-								userinfo(Xs, ['@'|Rest_excUI], UI), 
-								host(Rest_excUI, Rest, H), !.	
-authority(['/','/'|Xs], Rest, '', H, P) :- 
-								host(Xs, [':'|Rest_excH], H),
-								port(Rest_excH, Rest, P), !.								
-authority(['/','/'|Xs], Rest, '', H, 80) :-
-								host(Xs, Rest, H), !.
+								userinfo(Xs, RestUI, UI), 
+								host(RestUI, RestH, H),
+								port(RestH, Rest, P), !.
+								
+userinfo(X, Rest, Result) :- identificatore(X, ['@'|Rest], Result), !.
+userinfo(Rest, Rest, '').
 								
 pqf([],[],'','',''). 
 pqf(['/'|Xs], Rest, P, Q, F) :- path(Xs, RestP, P),
@@ -34,8 +29,6 @@ fragment(['#'|Xs], Rest, Result) :- caratteri(X, Rest, Result, []),
 								Result \= '', !.
 fragment(Rest, Rest, '').
 
-userinfo(X, Rest, Result) :- identificatore(X, Rest, Result).
-
 
 host(H, Rest, Result) :- identificatore(H, Rest, Result). 
 
@@ -47,8 +40,9 @@ identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?',
 
 inputTxt(T, Rest, Result) :- string_chars(T, L), port(L, Rest, Result).
 
-port(D, Rest, Result) :- digits(D, Rest, Result), Result \= '', !.
-port(X, Rest, 80).
+port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Result)
+								Result \= '', !.
+port(Rest, Rest, 80).
 
 caratteri([C|Cs], Rest, Result, Filtri) :- 
 								non_member(C,Filtri), !,
