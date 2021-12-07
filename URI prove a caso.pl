@@ -1,10 +1,16 @@
-uri(S, UI, H, Port, Path, Q, F).
+%uri(S, UI, H, Port, Path, Q, F).
+uri(S, UI, H, Port).
 
-uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
+%uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
+						%string_chars(L, URI), 
+						%scheme(URI, URIexcS, S),
+						%authority(URIexcS, URIexcSA, UI, H, Port),
+						%pqf(URIexcSA, [], Path, Q, F).
+						
+uri_parse(L, uri(S, UI, H, Port)) :- 
 						string_chars(L, URI), 
 						scheme(URI, URIexcS, S),
-						authority(URIexcS, URIexcSA, UI, H, Port),
-						pqf(URIexcSA, [], Path, Q, F).
+						authority(URIexcS, URIexcSA, UI, H, Port).
 
 scheme(X, Rest, Result) :- identificatore(X, [':'|Rest], Result).
 
@@ -40,7 +46,7 @@ identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?',
 
 inputTxt(T, Rest, Result) :- string_chars(T, L), port(L, Rest, Result).
 
-port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Result)
+port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Result),
 								Result \= '', !.
 port(Rest, Rest, 80).
 
