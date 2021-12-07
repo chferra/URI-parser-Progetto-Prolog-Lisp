@@ -1,9 +1,10 @@
-uri(S, UI, H, P).
+uri(S, UI, H, Port, Path, Q, F).
 
-uri_parse(L, uri(S, UI, H, P)) :- 
+uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
 						string_chars(L, URI), 
 						scheme(URI, URIexcS, S),
-						authority(URIexcS, URIexcSA, UI, H, P).
+						authority(URIexcS, URIexcSA, UI, H, Port),
+						pqf(URIexcSA, [], Path, Q, F).
 
 scheme(X, Rest, Result) :- identificatore(X, [':'|Rest], Result).
 
@@ -16,9 +17,22 @@ authority(['/','/'|Xs], Rest, UI, H, 80) :-
 								host(Rest_excUI, Rest, H), !.	
 authority(['/','/'|Xs], Rest, '', H, P) :- 
 								host(Xs, [':'|Rest_excH], H),
-								port(Rest_excH, Rest, P), !.									
+								port(Rest_excH, Rest, P), !.								
 authority(['/','/'|Xs], Rest, '', H, 80) :-
 								host(Xs, Rest, H), !.
+								
+pqf([],[],'','',''). 
+pqf(['/'|Xs], Rest, P, Q, F) :- path(Xs, RestP, P),
+								query(RestP, RestQ, Q),
+								fragment(RestQ, Rest, F), !.
+
+query(['?'|Xs], Rest, Result) :- caratteri(X, Rest, Result, ['#']),
+								Result \= '', !.
+query(Rest, Rest, '').
+
+fragment(['#'|Xs], Rest, Result) :- caratteri(X, Rest, Result, []),
+								Result \= '', !.
+fragment(Rest, Rest, '').
 
 userinfo(X, Rest, Result) :- identificatore(X, Rest, Result).
 
