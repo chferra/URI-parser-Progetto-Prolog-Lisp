@@ -1,6 +1,6 @@
-uri(S, A, UI, H, P).
+uri(S, UI, H, P).
 
-uri_parse(L, uri(S, A, UI, H, P)) :- 
+uri_parse(L, uri(S, UI, H, P)) :- 
 						string_chars(L, URI), 
 						scheme(URI, URIexcS, S),
 						authority(URIexcS, URIexcSA, UI, H, P).
@@ -22,10 +22,9 @@ authority(['/','/'|Xs], Rest, '', H, 80) :-
 
 userinfo(X, Rest, Result) :- identificatore(X, Rest, Result).
 
-%host(['.'|Hs], Rest, Result) :- identificatore(Hs, S, P), !, host(S, Rest, T), 
-host(H, Rest, Result) :- !, identificatore(H, ExcI, R). %, !,
-						%host(ExcI, Rest, S), !,
-						%atom_concat(R,S,Result).
+
+host(H, Rest, Result) :- identificatore(H, Rest, Result). 
+
 
 identificatore(X, Rest, Result) :- caratteri(X, Rest, Result, ['/','?','#','@',':']), 
 									Result \= ''.
