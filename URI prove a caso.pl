@@ -8,17 +8,17 @@ uri_parse(L, uri(S, UI, H, P)) :-
 scheme(X, Rest, Result) :- identificatore(X, [':'|Rest], Result).
 
 authority(['/','/'|Xs], Rest, UI, H, P) :-
-								userinfo(Xs, ['@'|Rest_excUI], UI), !, 
-								host(Rest_excUI, [':'|Rest_excUIH], H), !,
+								userinfo(Xs, ['@'|Rest_excUI], UI), 
+								host(Rest_excUI, [':'|Rest_excUIH], H),
 								port(Rest_excUIH, Rest, P), !.
 authority(['/','/'|Xs], Rest, UI, H, 80) :-
-								userinfo(Xs, ['@'|Rest_excUI], UI), !, 
-								host(Rest_excUI, Rest, H).	
+								userinfo(Xs, ['@'|Rest_excUI], UI), 
+								host(Rest_excUI, Rest, H), !.	
 authority(['/','/'|Xs], Rest, '', H, P) :- 
-								host(Xs, [':'|Rest_excH], H), !,
+								host(Xs, [':'|Rest_excH], H),
 								port(Rest_excH, Rest, P), !.									
 authority(['/','/'|Xs], Rest, '', H, 80) :-
-								host(Xs, Rest, H).
+								host(Xs, Rest, H), !.
 
 userinfo(X, Rest, Result) :- identificatore(X, Rest, Result).
 
