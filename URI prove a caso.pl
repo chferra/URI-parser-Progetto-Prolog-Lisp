@@ -17,20 +17,22 @@ userinfo(X, Rest, Result) :- identificatore(X, ['@'|Rest], Result), !.
 userinfo(Rest, Rest, '').
 								
 pqf([],[],'','',''). 
-pqf(['/'|Xs], Rest, P, Q, F) :- path(Xs, RestP, P),
+pqf(Xs, Rest, P, Q, F) :- 
+								path(Xs, RestP, P),
 								query(RestP, RestQ, Q),
 								fragment(RestQ, Rest, F), !.
 
-query(['?'|Xs], Rest, Result) :- caratteri(X, Rest, Result, ['#']),
-								Result \= '', !.
+path(['/'|Xs], Rest, Result) :- identificatore(Xs, Rest, Result), Result \= '', !.
+path(Rest, Rest, '').
+
+query(['?'|Xs], Rest, Result) :- identificatore(Xs, Rest, Result), Result \= '', !.
 query(Rest, Rest, '').
 
-fragment(['#'|Xs], Rest, Result) :- caratteri(X, Rest, Result, []),
-								Result \= '', !.
+fragment(['#'|Xs], Rest, Result) :- identificatore(Xs, Rest, Result), Result \= '', !.
 fragment(Rest, Rest, '').
 
 
-host(H, Rest, Result) :- identificatore(H, Rest, Result). 
+host(H, Rest, Result) :- identificatore-host(H, Rest, Result). 
 
 
 identificatore(X, Rest, Result) :- caratteri(X, Rest, Result, ['/','?','#','@',':']), 
