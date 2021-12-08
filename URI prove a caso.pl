@@ -34,7 +34,6 @@ fragment(Rest, Rest, '').
 
 host(H, Rest, Result) :- identificatore-host(H, Rest, Result). 
 
-
 identificatore(X, Rest, Result) :- caratteri(X, Rest, Result, ['/','?','#','@',':']), 
 									Result \= ''.
 identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?','#','@',':']),
@@ -73,3 +72,61 @@ digit(C) :- atom_number(C, D), D >= 0, D =< 9, !.
 non_member(X, [X|_]) :- !, fail.
 non_member(X, [_|Xs]) :- !, non_member(X, Xs).
 non_member(_, []).
+
+%%% 
+%%% Display URI components
+%%%
+uri_display(L) :- 
+						string_chars(L, URI), 
+						scheme(URI, URIexcS, S),
+						authority(URIexcS, URIexcSA, UI, H, Port),
+						pqf(URIexcSA, [], Path, Q, F),
+						write('Schema: '),
+						write(S),
+						nl,
+						write('UserInfo: '),
+						write(UI),
+						nl,
+						write('Host: '),
+						write(H),
+						nl,
+						write('Port: '),
+						write(Port),
+						nl,
+						write('Path: '),
+						write(Path),
+						nl,
+						write('Query: '),
+						write(Q),
+						nl,
+						write('Fragment: '),
+						write(F),
+						nl.
+
+uri_display(L, uri(S, UI, H, Port, Path, Q, F)) :- 
+						string_chars(L, URI), 
+						scheme(URI, URIexcS, S),
+						authority(URIexcS, URIexcSA, UI, H, Port),
+						pqf(URIexcSA, [], Path, Q, F),
+						write('Schema: '),
+						write(S),
+						nl,
+						write('UserInfo: '),
+						write(UI),
+						nl,
+						write('Host: '),
+						write(H),
+						nl,
+						write('Port: '),
+						write(Port),
+						nl,
+						write('Path: '),
+						write(Path),
+						nl,
+						write('Query: '),
+						write(Q),
+						nl,
+						write('Fragment: '),
+						write(F),
+						nl.
+						
