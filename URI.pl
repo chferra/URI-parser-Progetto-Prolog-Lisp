@@ -13,11 +13,16 @@ uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 						string_chars(L, URI), 
 						scheme(URI, URIexcS, S),
 						pqf(URIexcS, [], Path, Q, F).	
-%uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
-%						string_chars(L, URI), 
-%						scheme(URI, URIexcS, S),
-%						scheme-syntax(URIexcS, [], 
-
+uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
+						string_chars(L, URI), 
+						scheme(URI, URIexcS, S),
+						scheme-syntax(URIexcS, [], UI, H, Path).
+						
+scheme-syntax(X, Rest, UI, Host, _) :- userinfo(X, ['@'|RestUI], UI), 
+									host(RestUI, Rest, Host).
+scheme-syntax(X, Rest, UI, _, _) :- userinfo(X, Rest, UI).
+scheme-syntax(X, Rest, _, UI, _) :- host(X, Rest, UI).
+ 
 scheme(X, Rest, Result) :- identificatore(X, [':'|Rest], Result).
 
 authority(['/','/'|Xs], Rest, UI, H, P) :-
