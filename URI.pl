@@ -22,9 +22,20 @@ pqf(['/'|Xs], Rest, P, Q, F) :-
 								query(RestP, RestQ, Q),
 								fragment(RestQ, Rest, F), !.
 
-path(Xs, Rest, Result) :- identificatore(Xs, Rest, Result).
+inputTxt(T, Rest, Result) :- string_chars(T, L), path(L, Rest, Result).
+
+
+path(Xs, Rest, Result) :- identificatore(Xs, RestI, I), !,
+							identificatori(RestI, Rest, Is), !, 
+							atom_concat(I, Is, Result).
 path(Rest, Rest, '').
 
+identificatori(['/'|Xs], Rest, Result) :- identificatore(Xs, RestI, I), !,
+									identificatori(RestI, Rest, Is), !,
+									atom_concat('/', I, SlashI),
+									atom_concat(SlashI, Is, Result).	
+identificatori(Rest, Rest, '').						
+											
 query(['?'|Xs], Rest, Result) :- caratteri(Xs, Rest, Result, ['#']),
 								Result \= '', !.
 query(Rest, Rest, '').
@@ -33,15 +44,15 @@ fragment(['#'|Xs], Rest, Result) :- caratteri(Xs, Rest, Result, []),
 								Result \= '', !.
 fragment(Rest, Rest, '').
 
-
 host(H, Rest, Result) :- identificatore-host(H, Rest, Result). 
-
+									
 identificatore(X, Rest, Result) :- caratteri(X, Rest, Result, ['/','?','#','@',':']), 
 									Result \= ''.
+									
 identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?','#','@',':']),
 										Result \= ''.
 
-inputTxt(T, Rest, Result) :- string_chars(T, L), port(L, Rest, Result).
+
 
 port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Result),
 								Result \= '', !.
