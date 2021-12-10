@@ -1,10 +1,22 @@
 uri(S, UI, H, Port, Path, Q, F).
 
 uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
-						string_chars(L, URI), 
+						string_chars(L, URI),
 						scheme(URI, URIexcS, S),
 						authority(URIexcS, URIexcSA, UI, H, Port),
 						pqf(URIexcSA, [], Path, Q, F).
+uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
+						string_chars(L, URI), 
+						scheme(URI, URIexcS, S),
+						pqf(['/'|URIexcS], [], Path, Q, F).
+uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
+						string_chars(L, URI), 
+						scheme(URI, URIexcS, S),
+						pqf(URIexcS, [], Path, Q, F).	
+%uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
+%						string_chars(L, URI), 
+%						scheme(URI, URIexcS, S),
+%						scheme-syntax(URIexcS, [], 
 
 scheme(X, Rest, Result) :- identificatore(X, [':'|Rest], Result).
 
@@ -54,9 +66,10 @@ identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?',
 
 
 
-port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Result),
+port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Ds),
+								atom_number(Ds, Result),
 								Result \= '', !.
-port(Rest, Rest, '80').
+port(Rest, Rest, 80).
 
 caratteri([C|Cs], Rest, Result, Filtri) :- 
 								non_member(C,Filtri), !,
