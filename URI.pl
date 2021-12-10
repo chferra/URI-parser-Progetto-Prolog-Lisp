@@ -56,7 +56,7 @@ identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?',
 
 port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Result),
 								Result \= '', !.
-port(Rest, Rest, 80).
+port(Rest, Rest, '80').
 
 caratteri([C|Cs], Rest, Result, Filtri) :- 
 								non_member(C,Filtri), !,
