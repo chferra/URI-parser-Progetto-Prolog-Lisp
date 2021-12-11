@@ -44,7 +44,8 @@ inputTxt(T, Rest, Result) :- string_chars(T, L), path(L, Rest, Result).
 
 path(Xs, Rest, Result) :- identificatore(Xs, RestI, I), !,
 							identificatori(RestI, Rest, Is), !, 
-							atom_concat(I, Is, Result).
+							atom_concat('/', I, SlashI),
+							atom_concat(SlashI, Is, Result).
 path(Rest, Rest, '').
 
 identificatori(['/'|Xs], Rest, Result) :- identificatore(Xs, RestI, I), !,
