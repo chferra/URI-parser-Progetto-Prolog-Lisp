@@ -62,7 +62,17 @@ fragment(['#'|Xs], Rest, Result) :- caratteri(Xs, Rest, Result, []),
 								Result \= '', !.
 fragment(Rest, Rest, '').
 
-host(H, Rest, Result) :- identificatore-host(H, Rest, Result). 
+host(H, Rest, Result) :- identificatore-host(H, RestI, I), !,
+                            identificatori_host(RestI, Rest, Is), !,
+						    atom_concat('', I, DotI),
+							atom_concat(DotI, Is, Result).
+host(Rest, Rest, '').
+
+identificatori_host(['.'|Xs], Rest, Result) :- identificatore-host(Xs, RestI, I), !,
+									identificatori_host(RestI, Rest, Is), !,
+									atom_concat('.', I, DotI),
+									atom_concat(DotI, Is, Result).
+identificatori_host(Rest, Rest, '').									
 									
 identificatore(X, Rest, Result) :- caratteri(X, Rest, Result, ['/','?','#','@',':']), 
 									Result \= ''.
