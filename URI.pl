@@ -4,19 +4,19 @@ uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 						string_chars(L, URI),
 						scheme(URI, URIexcS, S),
 						authority(URIexcS, URIexcSA, UI, H, Port),
-						pqf(URIexcSA, [], Path, Q, F).
+						pqf(URIexcSA, [], Path, Q, F), !.
 uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
 						string_chars(L, URI), 
 						scheme(URI, URIexcS, S),
-						pqf(['/'|URIexcS], [], Path, Q, F).
+						pqf(['/'|URIexcS], [], Path, Q, F), !.
 uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
 						string_chars(L, URI), 
 						scheme(URI, URIexcS, S),
-						pqf(URIexcS, [], Path, Q, F).	
+						pqf(URIexcS, [], Path, Q, F), !.	
 uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
 						string_chars(L, URI), 
 						scheme(URI, URIexcS, S),
-						scheme-syntax(URIexcS, [], UI, H, Path).
+						scheme-syntax(URIexcS, [], UI, H, Path), !.
 						
 scheme-syntax(X, Rest, UI, Host, _) :- userinfo(X, ['@'|RestUI], UI), 
 									host(RestUI, Rest, Host).
@@ -115,60 +115,34 @@ non_member(X, [X|_]) :- !, fail.
 non_member(X, [_|Xs]) :- !, non_member(X, Xs).
 non_member(_, []).
 
-%%% 
-%%% Display URI components
-%%%
 uri_display(L) :- 
 						string_chars(L, URI), 
-						scheme(URI, URIexcS, S),
-						authority(URIexcS, URIexcSA, UI, H, Port),
-						pqf(URIexcSA, [], Path, Q, F),
-						write('Schema: '),
-						write(S),
-						nl,
-						write('UserInfo: '),
-						write(UI),
-						nl,
-						write('Host: '),
-						write(H),
-						nl,
-						write('Port: '),
-						write(Port),
-						nl,
-						write('Path: '),
-						write(Path),
-						nl,
-						write('Query: '),
-						write(Q),
-						nl,
-						write('Fragment: '),
-						write(F),
-						nl.
+						uri_parse(L, uri(S, UI, H, Port, Path, Q, F)),
+						my_write(['Schema: ', S]),
+						my_write(['UserInfo: ', UI]),
+						my_write(['Host: ', H]),
+						my_write(['Port: ', Port]),
+						my_write(['Path: ', Path]),
+						my_write(['Query: ', Q]),
+						my_write(['Fragment: ', F]).
 
-uri_display(L, uri(S, UI, H, Port, Path, Q, F)) :- 
-						string_chars(L, URI), 
-						scheme(URI, URIexcS, S),
-						authority(URIexcS, URIexcSA, UI, H, Port),
-						pqf(URIexcSA, [], Path, Q, F),
-						write('Schema: '),
-						write(S),
-						nl,
-						write('UserInfo: '),
-						write(UI),
-						nl,
-						write('Host: '),
-						write(H),
-						nl,
-						write('Port: '),
-						write(Port),
-						nl,
-						write('Path: '),
-						write(Path),
-						nl,
-						write('Query: '),
-						write(Q),
-						nl,
-						write('Fragment: '),
-						write(F),
-						nl.
+uri_display(L, Stream) :- 
+						current_output(O),
+						open(Stream, append, StreamId),
+						set_output(StreamId),
+						uri_parse(L, uri(S, UI, H, Port, Path, Q, F)),
+						writeln('URI display:'),
+						my_write(['\tSchema: ', S]),
+						my_write(['\tUserInfo: ', UI]),
+						my_write(['\tHost: ', H]),
+						my_write(['\tPort: ', Port]),
+						my_write(['\tPath: ', Path]),
+						my_write(['\tQuery: ', Q]),
+						my_write(['\tFragment: ', F]),
+						set_output(O),
+						close(StreamId).
+
+my_write(Terms) :- 	atomics_to_string(Terms, Res),
+					writeln(Res).
+
 						
