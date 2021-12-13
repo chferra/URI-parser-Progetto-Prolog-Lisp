@@ -62,11 +62,39 @@ fragment(['#'|Xs], Rest, Result) :- caratteri(Xs, Rest, Result, []),
 								Result \= '', !.
 fragment(Rest, Rest, '').
 
+host(H, Rest, Result) :- countGroup(X, Rest, Result, 4), !.
 host(H, Rest, Result) :- identificatore-host(H, RestI, I), !,
                             identificatori_host(RestI, Rest, Is), !,
 						    atom_concat('', I, DotI),
 							atom_concat(DotI, Is, Result).
+				
 host(Rest, Rest, '').
+
+
+ip(X, Rest, Result) :- countGroup(X, Rest, Result, 4).
+
+countGroup(['.'|X], Rest, Result, Ngr) :- digits(X, Rest0, R0),
+							between(R0), !,
+							countGroup(Rest0, Rest, Ds, N),
+							atom_concat('.', R0, R0p),
+							atom_concat(R0p, Ds, Result),
+							Ngr is N + 1,
+							Ngr > 0, !.
+							
+countGroup(X, Rest, Result, Ngr) :- digits(X, Rest0, R0),
+                            between(R0), !,
+							countGroup(Rest0, Rest, Ds, N),
+							Ngr is N + 1,
+							atom_concat(R0, Ds, Result),
+							Ngr > 0, !.
+
+countGroup(Rest, Rest, '', 0).
+
+
+
+between(X) :- atom_number(X, D),
+              D < 255,
+			  D >= 0.
 
 identificatori_host(['.'|Xs], Rest, Result) :- identificatore-host(Xs, RestI, I), !,
 									identificatori_host(RestI, Rest, Is), !,
