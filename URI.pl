@@ -62,7 +62,7 @@ fragment(['#'|Xs], Rest, Result) :- caratteri(Xs, Rest, Result, []),
 								Result \= '', !.
 fragment(Rest, Rest, '').
 
-host(H, Rest, Result) :- countGroup(X, Rest, Result, 4), !.
+host(H, Rest, Result) :- countGroup(H, Rest, Result, 4), !.
 host(H, Rest, Result) :- identificatore-host(H, RestI, I), !,
                             identificatori_host(RestI, Rest, Is), !,
 						    atom_concat('', I, DotI),
@@ -73,7 +73,8 @@ host(Rest, Rest, '').
 
 ip(X, Rest, Result) :- countGroup(X, Rest, Result, 4).
 
-countGroup(['.'|X], Rest, Result, Ngr) :- digits(X, Rest0, R0),
+countGroup(['.'|X], Rest, Result, Ngr) :- write(X),
+							digits(X, Rest0, R0),							
 							between(R0), !,
 							countGroup(Rest0, Rest, Ds, N),
 							atom_concat('.', R0, R0p),
