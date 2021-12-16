@@ -72,6 +72,8 @@ host(Rest, Rest, '').
 
 
 ip(X, Rest, Result) :- countGroup(X, Rest, Result, 4).
+id44Test(T, Rest, Result) :- string_chars(T, L),
+							id44(L, Rest, Result).
 
 countGroup(['.'|X], Rest, Result, Ngr) :- write(X),
 							digits(X, Rest0, R0),							
@@ -109,7 +111,34 @@ identificatore(X, Rest, Result) :- caratteri(X, Rest, Result, ['/','?','#','@','
 identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?','#','@',':']),
 										Result \= ''.
 
+id44(['('|X], Rest, Result) :- caratteri(X, Rest0, Result0, ['/','?','#','@',':',')']),
+							write('BB>'),write(Rest0),write(' -- '),write(Result0),nl,
+										string_length(Result0, Ln),
+										atomics_to_string(Rest0, SR0),
+										string_length(SR0, Ln1),
+							write(Ln), write('-'),write(Ln1),nl,
+										Ln =< 8, !,
+										Ln > 0, !,
+										Ln1 < 1, !,
+										id44(Rest0, Rest, Result1),
+										atom_concat(Result0, Result1, Result),
+										write('BB1>'),write(Rest),write(' -- '),write(Result),nl.
 
+id44(X, Rest, Result) :- caratteri(X, Rest0, Result0, ['/','?','#','@',':','(']),
+							write('AA>'),write(Rest0),write(' -- '),write(Result0),nl,
+										string_length(Result0, Ln),
+										atomics_to_string(Rest0, SR0),
+										string_length(SR0, Ln1),
+							write(Ln), write('-'),write(Ln1),nl,
+
+										Ln =< 44, !,
+										Ln > 0, !,
+										Ln1 == 0, !,
+										id44(Rest0, Rest, Result1),
+										atom_concat(Result0, Result1, Result), !,
+										write('AA1>'),write(Rest),write(' -- '),write(Result),nl.
+
+id44(Rest, Rest, '').
 
 port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Ds),
 								atom_number(Ds, Result),
