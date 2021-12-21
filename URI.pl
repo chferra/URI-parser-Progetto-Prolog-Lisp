@@ -72,8 +72,7 @@ host(Rest, Rest, '').
 
 
 ip(X, Rest, Result) :- countGroup(X, Rest, Result, 4).
-id44Test(T, Rest, Result) :- string_chars(T, L),
-							id44(L, Rest, Result).
+
 
 countGroup(['.'|X], Rest, Result, Ngr) :- write(X),
 							digits(X, Rest0, R0),							
@@ -110,6 +109,9 @@ identificatore(X, Rest, Result) :- caratteri(X, Rest, Result, ['/','?','#','@','
 									
 identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?','#','@',':']),
 										Result \= ''.
+										
+id44Test(T, Rest, Result) :- string_chars(T, L),
+							id44(L, Rest, Result).
 
 id44(['('|X], Rest, Result) :- caratteri(X, Rest0, Result0, ['/','?','#','@',':',')']),
 							write('BB>'),write(Rest0),write(' -- '),write(Result0),nl,
