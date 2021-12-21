@@ -173,9 +173,7 @@ non_member(X, [X|_]) :- !, fail.
 non_member(X, [_|Xs]) :- !, non_member(X, Xs).
 non_member(_, []).
 
-uri_display(L) :- 
-						string_chars(L, URI), 
-						uri_parse(L, uri(S, UI, H, Port, Path, Q, F)),
+uri_display(uri(S, UI, H, Port, Path, Q, F)) :- 
 						my_write(['Schema: ', S]),
 						my_write(['UserInfo: ', UI]),
 						my_write(['Host: ', H]),
@@ -184,11 +182,10 @@ uri_display(L) :-
 						my_write(['Query: ', Q]),
 						my_write(['Fragment: ', F]).
 
-uri_display(L, Stream) :- 
+uri_display(uri(S, UI, H, Port, Path, Q, F), Stream) :- 
 						current_output(O),
 						open(Stream, append, StreamId),
 						set_output(StreamId),
-						uri_parse(L, uri(S, UI, H, Port, Path, Q, F)),
 						writeln('URI display:'),
 						my_write(['\tSchema: ', S]),
 						my_write(['\tUserInfo: ', UI]),
