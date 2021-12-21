@@ -113,39 +113,37 @@ identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?',
 id44Test(T, Rest, Result) :- string_chars(T, L),
 							id44(L, Rest, Result).
 
-id44(['('|X], Rest, Result) :- caratteri(X, Rest0, Result0, ['/','?','#','@',':',')']),
-							write('BB>'),write(Rest0),write(' -- '),write(Result0),nl,
-										string_length(Result0, Ln),
-										atomics_to_string(Rest0, SR0),
-										string_length(SR0, Ln1),
-							write(Ln), write('-'),write(Ln1),nl,
-										Ln =< 8, !,
-										Ln > 0, !,
-										Ln1 < 1, !,
-										id44(Rest0, Rest, Result1),
-										atom_concat(Result0, Result1, Result),
-										write('BB1>'),write(Rest),write(' -- '),write(Result),nl.
+								
+id44_01(['.'|X], Rest, Result) :- write('CC> '), write(X), nl,
+                                 X = [], !,
+								 Rest = [],
+							     atom_concat('.', '', Result).
 
-id44(X, Rest, Result) :- caratteri(X, Rest0, Result0, ['/','?','#','@',':','(']),
-							write('AA>'),write(Rest0),write(' -- '),write(Result0),nl,
-										string_length(Result0, Ln),
-										atomics_to_string(Rest0, SR0),
-										string_length(SR0, Ln1),
-							write(Ln), write('-'),write(Ln1),nl,
-
-										Ln =< 44, !,
-										Ln > 0, !,
-										Ln1 == 0, !,
-										id44(Rest0, Rest, Result1),
-										atom_concat(Result0, Result1, Result), !,
-										write('AA1>'),write(Rest),write(' -- '),write(Result),nl.
-
+id44(X, Rest, Result) :- caratteriAN(X, Rest0, Result0), !,
+write('AA> '), write(Rest0), write(' -- '),	write(Result0), nl,
+								id44_01(Rest0, Rest, Result1), !,
+write('BB> '), write(Rest), write(' -- '),	write(Result1), nl,
+								atom_concat(Result0, Result1, Result),
+								string_length(Result, Ln),
+								Ln =< 44, !,
+								Rest = [], !.							
+								
+									
 id44(Rest, Rest, '').
+id44_01(Rest, Rest, '').
 
 port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Ds),
 								atom_number(Ds, Result),
 								Result \= '', !.
 port(Rest, Rest, 80).
+
+
+caratteriAN([C|Cs], Rest, Result):- carattereAN(C), !,
+								caratteriAN(Cs, Rest, R), !,
+								atom_concat(C, R, Result).
+caratteriAN(Rest, Rest, '').
+
+carattereAN(C) :- digit(C); lower_az(C); upper_az(C).				
 
 caratteri([C|Cs], Rest, Result, Filtri) :- 
 								non_member(C,Filtri), !,
