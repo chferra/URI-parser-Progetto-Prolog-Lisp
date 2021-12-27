@@ -1,4 +1,4 @@
-%uri(S, UI, H, Port, Path, Q, F).
+uri(S, UI, H, Port, Path, Q, F).
 
 inputTxt(T, Rest, Result) :- string_chars(T, L), path(L, true, Rest, Result).
 
@@ -16,9 +16,9 @@ uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 
 scheme-syntax(X, 'mailto', UI, H, _, '', '', '') :-
 						userinfo(X, false, ['@'|RestUI], UI),
-						host(RestUI, false, [], H).
+						host(RestUI, false, Rest, Host).
 
-scheme-syntax(X, 'mailto', UI, _, _, '', '', '') :- userinfo(X, true, [], UI).
+scheme-syntax(X, 'mailto', UI, H, _, '', '', '') :- userinfo(X, true, [], UI).
 scheme-syntax(X, 'tel', UI, '', _, '', '', '') :- userinfo(X, true, [], UI).
 scheme-syntax(X, 'fax', UI, '', _, '', '', '') :- userinfo(X, true, [], UI).
 scheme-syntax(X, 'news', '', H, _, '', '', '') :- host(X, true, [], H).
@@ -36,7 +36,7 @@ authority(['/','/'|Xs], Rest, UI, H, P) :-
 authority(['/','/'|Xs], Rest, '', H, '') :- host(Xs, false, Rest, H).
 authority(Rest, Rest, '', '', '').
 
-userinfo(X, _, Rest, Result) :- identificatore(X, Rest, Result), !.
+userinfo(X, Opz, Rest, Result) :- identificatore(X, Rest, Result), !.
 userinfo(Rest, true, Rest, '').
 
 pqf(['/'|Xs], Zos, P, Q, F) :-
@@ -76,8 +76,8 @@ fragment(['#'|Xs], Rest, Result) :-
 						Result \= '', !.
 fragment(Rest, Rest, '').
 
-host(H, _, Rest, Result) :- countGroup(H, Rest, Result, 4).
-host(H, _, Rest, Result) :-
+host(H, Opz, Rest, Result) :- countGroup(H, Rest, Result, 4).
+host(H, Opz, Rest, Result) :-
 						identificatore_host(H, RestI, I), !,
 						identificatori_host(RestI, Rest, Is), !,
 						atom_concat('', I, DotI),
@@ -200,29 +200,28 @@ non_member(X, [_|Xs]) :- !, non_member(X, Xs).
 non_member(_, []).
 
 uri_display(uri(S, UI, H, Port, Path, Q, F)) :-
-						multi_write(['Schema: ', S]),
-						multi_write(['UserInfo: ', UI]),
-						multi_write(['Host: ', H]),
-						multi_write(['Port: ', Port]),
-						multi_write(['Path: ', Path]),
-						multi_write(['Query: ', Q]),
-						multi_write(['Fragment: ', F]).
+						my_write(['Schema: ', S]),
+						my_write(['UserInfo: ', UI]),
+						my_write(['Host: ', H]),
+						my_write(['Port: ', Port]),
+						my_write(['Path: ', Path]),
+						my_write(['Query: ', Q]),
+						my_write(['Fragment: ', F]).
 
 uri_display(uri(S, UI, H, Port, Path, Q, F), Stream) :-
 						current_output(O),
 						open(Stream, append, StreamId),
 						set_output(StreamId),
 						writeln('URI display:'),
-						multi_write(['\tSchema: ', S]),
-						multi_write(['\tUserInfo: ', UI]),
-						multi_write(['\tHost: ', H]),
-						multi_write(['\tPort: ', Port]),
-						multi_write(['\tPath: ', Path]),
-						multi_write(['\tQuery: ', Q]),
-						multi_write(['\tFragment: ', F]),
+						my_write(['\tSchema: ', S]),
+						my_write(['\tUserInfo: ', UI]),
+						my_write(['\tHost: ', H]),
+						my_write(['\tPort: ', Port]),
+						my_write(['\tPath: ', Path]),
+						my_write(['\tQuery: ', Q]),
+						my_write(['\tFragment: ', F]),
 						set_output(O),
 						close(StreamId).
 
-multi_write(Terms) :-
-						atomics_to_string(Terms, Res),
-						writeln(Res).
+my_write(Terms) :-	atomics_to_string(Terms, Res),
+					writeln(Res).
