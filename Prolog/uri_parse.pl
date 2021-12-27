@@ -14,14 +14,14 @@ uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 						authority(URIexcS, URIexcSA, UI, H, Port),
 						pqf(URIexcSA, false, Path, Q, F), !.
 
-scheme-syntax(X, 'mailto', UI, H, _, '', '', '') :-
+scheme-syntax(X, 'mailto', UI, H, 80, '', '', '') :-
 						userinfo(X, false, ['@'|RestUI], UI),
 						host(RestUI, false, [], H).
 
-scheme-syntax(X, 'mailto', UI, _, _, '', '', '') :- userinfo(X, true, [], UI).
-scheme-syntax(X, 'tel', UI, '', _, '', '', '') :- userinfo(X, true, [], UI).
-scheme-syntax(X, 'fax', UI, '', _, '', '', '') :- userinfo(X, true, [], UI).
-scheme-syntax(X, 'news', '', H, _, '', '', '') :- host(X, true, [], H).
+scheme-syntax(X, 'mailto', UI, '', 80, '', '', '') :- userinfo(X, true, [], UI).
+scheme-syntax(X, 'tel', UI, '', 80, '', '', '') :- userinfo(X, true, [], UI).
+scheme-syntax(X, 'fax', UI, '', 80, '', '', '') :- userinfo(X, true, [], UI).
+scheme-syntax(X, 'news', '', H, 80, '', '', '') :- host(X, true, [], H).
 scheme-syntax(X, 'zos', UI, H, Port, Path, Q, F) :-
 						authority(X, URIexcA, UI, H, Port),
 						pqf(URIexcA, true, Path, Q, F), !.
@@ -33,8 +33,8 @@ authority(['/','/'|Xs], Rest, UI, H, P) :-
 						host(RestUI, false, RestH, H),
 						port(RestH, Rest, P), !.
 
-authority(['/','/'|Xs], Rest, '', H, '') :- host(Xs, false, Rest, H).
-authority(Rest, Rest, '', '', '').
+authority(['/','/'|Xs], Rest, '', H, 80) :- host(Xs, false, Rest, H).
+authority(Rest, Rest, '', '', 80).
 
 userinfo(X, _, Rest, Result) :- identificatore(X, Rest, Result), !.
 userinfo(Rest, true, Rest, '').

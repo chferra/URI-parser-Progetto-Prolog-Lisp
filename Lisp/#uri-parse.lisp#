@@ -8,4 +8,6 @@
   fragment)
 
 (defun uri-parse (S)
-  (coerce S 'list)) 
+  (with-input-from-string (s S
+                             :index ind)
+    (+ (read s) (read s) (read s)))
