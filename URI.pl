@@ -87,20 +87,22 @@ host(Rest, true, Rest, '').
 ip(X, Rest, Result) :- countGroup(X, Rest, Result, 4).
 
 countGroup(['.'|X], Rest, Result, Ngr) :-
-						digits(X, Rest0, R0),
-						between(R0, 0, 255), !,
-						countGroup(Rest0, Rest, Ds, N),
-						atom_concat('.', R0, R0p),
-						atom_concat(R0p, Ds, Result),
+						digits(X, RestD, D),
+						atom_number(D, Num),
+						between(Num, 0, 255), !,
+						countGroup(RestD, Rest, Ds, N),
+						atom_concat('.', D, DotD),
+						atom_concat(DotD, Ds, Result),
 						Ngr is N + 1,
 						Ngr > 0, !.
 
 countGroup(X, Rest, Result, Ngr) :-
-						digits(X, Rest0, R0),
-						between(R0, 0, 255), !,
-						countGroup(Rest0, Rest, Ds, N),
+						digits(X, RestD, D),
+						atom_number(D, Num),
+						between(Num, 0, 255), !,
+						countGroup(RestD, Rest, Ds, N),
 						Ngr is N + 1,
-						atom_concat(R0, Ds, Result),
+						atom_concat(D, Ds, Result),
 						Ngr > 0, !.
 
 countGroup(Rest, Rest, '', 0).
@@ -167,8 +169,10 @@ caratteri(Rest, Rest, '', _).
 carattere(C) :- reserved(C).
 carattere(C) :- unreserved(C).
 
-reserved(C) :- member(C, [':','/','?','#','[',']','@']). %gen-delims
-reserved(C) :- member(C, ['!','$','&','\'','(',')','*','+',',',';','=']). %sub-delims
+%gen-delims
+reserved(C) :- member(C, [':','/','?','#','[',']','@']).
+%sub-delims
+reserved(C) :- member(C, ['!','$','&','\'','(',')','*','+',',',';','=']).
 
 unreserved(C) :- digit(C).
 unreserved(C) :- carattereAlfabetico(C).
