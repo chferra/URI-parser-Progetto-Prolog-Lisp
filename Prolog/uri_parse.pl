@@ -1,6 +1,6 @@
 %uri(S, UI, H, Port, Path, Q, F).
 
-inputTxt(T, Rest, Result) :- string_chars(T, L), path(L, true, Rest, Result).
+inputTxt(T, Rest, Result) :- string_chars(T, L), identificatore(L, Rest, Result).
 
 uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 						string_chars(L, URI),
@@ -89,7 +89,7 @@ ip(X, Rest, Result) :- countGroup(X, Rest, Result, 4).
 countGroup(['.'|X], Rest, Result, Ngr) :-
 						digits(X, RestD, D),
 						atom_number(D, Num),
-						between(Num, 0, 255), !,
+						between(0, 255, Num), !,
 						countGroup(RestD, Rest, Ds, N),
 						atom_concat('.', D, DotD),
 						atom_concat(DotD, Ds, Result),
@@ -99,7 +99,7 @@ countGroup(['.'|X], Rest, Result, Ngr) :-
 countGroup(X, Rest, Result, Ngr) :-
 						digits(X, RestD, D),
 						atom_number(D, Num),
-						between(Num, 0, 255), !,
+						between(0, 255, Num), !,
 						countGroup(RestD, Rest, Ds, N),
 						Ngr is N + 1,
 						atom_concat(D, Ds, Result),
@@ -137,12 +137,12 @@ id44([X|Xs], Rest, Result) :-
 						carattereAlfabetico(X), !,
 						id44tail([X|Xs], Rest, Result), !,
 						string_length(Result, Ln),
-						between(Ln, 1, 44).
+						between(1, 44, Ln).
 
 id8(X, Rest, Result) :- caratteriAN(X, Rest, Result),
 						Result \= '',
 						string_length(Result, Ln),
-						between(Ln, 1, 8).
+						between(1, 8, Ln).
 
 port([':'|Xs], Rest, Result) :-
 						digits(Xs, Rest, Ds),
@@ -166,17 +166,17 @@ caratteri([C|Cs], Rest, Result, Filtri) :-
 						atom_concat(C, R, Result).
 caratteri(Rest, Rest, '', _).
 
-carattere(C) :- reserved(C).
-carattere(C) :- unreserved(C).
+carattere(C) :- reserved(C), !.
+carattere(C) :- unreserved(C), !.
 
 %gen-delims
 reserved(C) :- member(C, [':','/','?','#','[',']','@']).
 %sub-delims
 reserved(C) :- member(C, ['!','$','&','\'','(',')','*','+',',',';','=']).
 
-unreserved(C) :- digit(C).
-unreserved(C) :- carattereAlfabetico(C).
-unreserved(C) :- member(C, ['-','.','_','~']).
+unreserved(C) :- digit(C), !.
+unreserved(C) :- carattereAlfabetico(C), !.
+unreserved(C) :- member(C, ['-','.','_','~']), !.
 
 carattereAlfabetico(C) :- lower_az(C), !.
 carattereAlfabetico(C) :- upper_az(C), !.
@@ -197,7 +197,7 @@ digits([D|Ds], Rest, Result) :-
 digits(Rest, Rest, '').
 digit(C) :-
 						atom_number(C, D),
-						between(D, 0, 9), !.
+						between(0, 9, D), !.
 
 non_member(X, [X|_]) :- !, fail.
 non_member(X, [_|Xs]) :- !, non_member(X, Xs).
