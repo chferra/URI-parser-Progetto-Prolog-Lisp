@@ -1,51 +1,56 @@
 uri(S, UI, H, Port, Path, Q, F).
 
-uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
+inputTxt(T, Rest, Result) :- string_chars(T, L), path(L, true, Rest, Result).
+
+uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
+						string_chars(L, URI),
+						scheme(URI, URIexcS, S),
+						member(S, ['mailto','tel','fax','news','zos']), !,
+						scheme-syntax(URIexcS, S, UI, H, Port, Path, Q, F), !.
+uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 						string_chars(L, URI),
 						scheme(URI, URIexcS, S),
 						authority(URIexcS, URIexcSA, UI, H, Port),
-						pqf(URIexcSA, [], Path, Q, F), !.
-uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
-						string_chars(L, URI), 
-						scheme(URI, URIexcS, S),
-						pqf(['/'|URIexcS], [], Path, Q, F), !.
-uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
-						string_chars(L, URI), 
-						scheme(URI, URIexcS, S),
-						pqf(URIexcS, [], Path, Q, F), !.	
-uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :- 
-						string_chars(L, URI), 
-						scheme(URI, URIexcS, S),
-						scheme-syntax(URIexcS, [], UI, H, Path), !.
+						pqf(URIexcSA, false, Path, Q, F), !.
 						
-scheme-syntax(X, Rest, UI, Host, _) :- userinfo(X, ['@'|RestUI], UI), 
-									host(RestUI, Rest, Host).
-scheme-syntax(X, Rest, UI, _, _) :- userinfo(X, Rest, UI).
-scheme-syntax(X, Rest, _, UI, _) :- host(X, Rest, UI).
+scheme-syntax(X, 'mailto', UI, H, _, '', '', '') :- userinfo(X, false, ['@'|RestUI], UI), 
+									host(RestUI, false, Rest, Host).
+scheme-syntax(X, 'mailto', UI, H, _, '', '', '') :- userinfo(X, true, [], UI).
+scheme-syntax(X, 'tel', UI, '', _, '', '', '') :- userinfo(X, true, [], UI).
+scheme-syntax(X, 'fax', UI, '', _, '', '', '') :- userinfo(X, true, [], UI).
+scheme-syntax(X, 'news', '', H, _, '', '', '') :- host(X, true, [], H).
+scheme-syntax(X, 'zos', UI, H, Port, Path, Q, F) :-
+						authority(X, URIexcA, UI, H, Port),
+						pqf(URIexcA, true, Path, Q, F), !.
  
 scheme(X, Rest, Result) :- identificatore(X, [':'|Rest], Result).
 
 authority(['/','/'|Xs], Rest, UI, H, P) :-
-								userinfo(Xs, RestUI, UI), 
-								host(RestUI, RestH, H),
+								userinfo(Xs, true, ['@'|RestUI], UI),
+								host(RestUI, false, RestH, H),
 								port(RestH, Rest, P), !.
+authority(['/','/'|Xs], Rest, '', H, '') :- host(Xs, false, Rest, H).
+authority(Rest, Rest, '', '', '').
 								
-userinfo(X, Rest, Result) :- identificatore(X, ['@'|Rest], Result), !.
-userinfo(Rest, Rest, '').
+userinfo(X, Opz, Rest, Result) :- identificatore(X, Rest, Result), !.
+userinfo(Rest, true, Rest, '').
 								
-pqf([],[],'','',''). 
-pqf(['/'|Xs], Rest, P, Q, F) :- 
-								path(Xs, RestP, P),
-								query(RestP, RestQ, Q),
-								fragment(RestQ, Rest, F), !.
+pqf(['/'|Xs], Zos, P, Q, F) :- 
+						path(Xs, Zos, RestP, P), !,	
+						query(RestP, RestQ, Q), !,
+						fragment(RestQ, [], F).
+pqf([], _, '','',''). 
 
-inputTxt(T, Rest, Result) :- string_chars(T, L), path(L, Rest, Result).
-
-
-path(Xs, Rest, Result) :- identificatore(Xs, RestI, I), !,
+path(X, false, Rest, Result) :- identificatore(X, RestI, I), !,
 							identificatori(RestI, Rest, Is), !, 
 							atom_concat(I, Is, Result).
-path(Rest, Rest, '').
+path(X, true, Rest, Result) :- id44(X, ['('|Rest44], Res44),
+								id8(Rest44, [')'|Rest], Res8), !,
+								atom_concat('(', Res8, RRes8),
+								atom_concat(RRes8, ')', RRes8R),
+								atom_concat(Res44, RRes8R, Result).	
+path(X, true, Rest, Result) :- id44(X, Rest, Result).								
+path(Rest, false, Rest, '').
 
 identificatori(['/'|Xs], Rest, Result) :- identificatore(Xs, RestI, I), !,
 									identificatori(RestI, Rest, Is), !,
@@ -61,19 +66,16 @@ fragment(['#'|Xs], Rest, Result) :- caratteri(Xs, Rest, Result, []),
 								Result \= '', !.
 fragment(Rest, Rest, '').
 
-host(H, Rest, Result) :- countGroup(H, Rest, Result, 4), !.
-host(H, Rest, Result) :- identificatore-host(H, RestI, I), !,
+host(H, Opz, Rest, Result) :- countGroup(H, Rest, Result, 4).
+host(H, Opz, Rest, Result) :- identificatore-host(H, RestI, I), !,
                             identificatori_host(RestI, Rest, Is), !,
 						    atom_concat('', I, DotI),
-							atom_concat(DotI, Is, Result).
-				
-host(Rest, Rest, '').
-
+							atom_concat(DotI, Is, Result).			
+host(Rest, true, Rest, '').
 
 ip(X, Rest, Result) :- countGroup(X, Rest, Result, 4).
 
-
-countGroup(['.'|X], Rest, Result, Ngr) :- write(X),
+countGroup(['.'|X], Rest, Result, Ngr) :-
 							digits(X, Rest0, R0),							
 							between(R0), !,
 							countGroup(Rest0, Rest, Ds, N),
@@ -91,8 +93,6 @@ countGroup(X, Rest, Result, Ngr) :- digits(X, Rest0, R0),
 
 countGroup(Rest, Rest, '', 0).
 
-
-
 between(X) :- atom_number(X, D),
               D < 255,
 			  D >= 0.
@@ -107,29 +107,31 @@ identificatore(X, Rest, Result) :- caratteri(X, Rest, Result, ['/','?','#','@','
 									Result \= ''.
 									
 identificatore-host(X, Rest, Result) :- caratteri(X, Rest, Result, ['.','/','?','#','@',':']),
-										Result \= ''.
-										
-id44Test(T, Rest, Result) :- string_chars(T, L),
-							id44(L, Rest, Result).
-
+										Result \= ''.									
 								
-id44_01(['.'|X], Rest, Result) :- write('CC> '), write(X), nl,
-                                 X = [], !,
-								 Rest = [],
-							     atom_concat('.', '', Result).
-
-id44(X, Rest, Result) :- caratteriAN(X, Rest0, Result0), !,
-write('AA> '), write(Rest0), write(' -- '),	write(Result0), nl,
-								id44_01(Rest0, Rest, Result1), !,
-write('BB> '), write(Rest), write(' -- '),	write(Result1), nl,
-								atom_concat(Result0, Result1, Result),
-								string_length(Result, Ln),
-								Ln =< 44, !,
-								Rest = [], !.							
-								
+id44tail(['.'|Xs], Rest, Result) :-
+									id44tail(Xs, Rest, Res),
+									Res \= '',
+									atom_concat('.', Res, Result).
+id44tail(X, Rest, Result) :-
+							caratteriAN(X, RestCs, Cs),
+							Cs \= '',
+							id44tail(RestCs, Rest, Res), !,
+							atom_concat(Cs, Res, Result).
+id44tail(Rest, Rest, '').						
 									
-id44(Rest, Rest, '').
-id44_01(Rest, Rest, '').
+id44([X|Xs], Rest, Result) :- carattereAlfabetico(X), !,
+								id44tail([X|Xs], Rest, Result), !,
+								string_length(Result, Ln),
+								Ln =< 44,
+								Ln >= 1.																						
+%id44(Rest, Rest, '').
+
+id8(X, Rest, Result) :- caratteriAN(X, Rest, Result), 
+						Result \= '',
+						string_length(Result, Ln),
+						Ln =< 8,
+						Ln >= 1.
 
 port([':'|Xs], Rest, Result) :- digits(Xs, Rest, Ds),
 								atom_number(Ds, Result),
@@ -142,7 +144,7 @@ caratteriAN([C|Cs], Rest, Result):- carattereAN(C), !,
 								atom_concat(C, R, Result).
 caratteriAN(Rest, Rest, '').
 
-carattereAN(C) :- digit(C); lower_az(C); upper_az(C).				
+carattereAN(C) :- digit(C); carattereAlfabetico(C).				
 
 caratteri([C|Cs], Rest, Result, Filtri) :- 
 								non_member(C,Filtri), !,
@@ -157,7 +159,10 @@ reserved(C) :- gen-delims(C); sub-delims(C).
 gen-delims(C) :- member(C, [':','/','?','#','[',']','@']).
 sub-delims(C) :- member(C, ['!','$','&','\'','(',')','*','+',',',';','=']).
 
-unreserved(C) :- digit(C); lower_az(C); upper_az(C); member(C, ['-','.','_','~']).
+unreserved(C) :- digit(C); carattereAlfabetico(C); member(C, ['-','.','_','~']).
+
+carattereAlfabetico(C) :- lower_az(C), !.
+carattereAlfabetico(C) :- upper_az(C), !.
 
 lower_az(C) :- char_code(C, N), N >= 97, N =< 122, !.
 upper_az(C) :- char_code(C, N), N >= 65, N =< 90, !.
@@ -198,5 +203,3 @@ uri_display(uri(S, UI, H, Port, Path, Q, F), Stream) :-
 
 my_write(Terms) :- 	atomics_to_string(Terms, Res),
 					writeln(Res).
-
-						
