@@ -10,13 +10,13 @@
 (defun uri-parse (s)
   (let* ((strList (mapcar 'string (coerce s 'list)))
          (scheme (parse-scheme strList))
-         (userinfo (parse-userinfo (cdr scheme)))
-         (host (parse-host (cdr userinfo)))
-         (port (parse-port (cdr host)))
-         (path (parse-path (cdr port)))
-         (query (parse-query (cdr path)))
-         (fragment (parse-fragment (cdr query))))
-    (make-instance 'uri-structure
+         (userinfo (parse-userinfo (second scheme)))
+         (host (parse-host (second userinfo)))
+         (port (parse-port (second host)))
+         (path (parse-path (second port)))
+         (query (parse-query (second path)))
+         (fragment (parse-fragment (second query))))
+    (make-uri-structure
                    :scheme (car scheme)
                    :userinfo (car userinfo)
                    :host (car host)
@@ -30,7 +30,6 @@
   (list (car l) (cdr l)))
 
 (defun parse-userinfo (l)
-  (print l)
   (print (list (car l) (cdr l)))
   (list (car l) (cdr l)))
 
@@ -40,7 +39,7 @@
 
 (defun parse-port (l)
   (print (list (car l) (cdr l)))
-  (list (car l) (cdr l)))
+  (list (parse-integer (car l)) (cdr l)))
 
 (defun parse-path (l)
   (print (list (car l) (cdr l)))
@@ -54,6 +53,5 @@
   (print (list (car l) (cdr l)))
   (list (car l) (cdr l)))
 
-
 (defun deleteFirst (lista)
-  (let (append nil (cdr lista))))
+  (append nil (cdr lista)))

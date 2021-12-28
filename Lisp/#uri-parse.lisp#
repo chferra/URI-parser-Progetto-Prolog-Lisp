@@ -26,7 +26,16 @@
                    :fragment (car fragment))))
 
 (defun parse-scheme (l)
-  (list (car l) (cdr l)))
+  (list (car l) (cdr l))
+  
+
+
+)
+
+(defparameter gen-delims
+  (list #\: #\/ #\? #\# #\[ #\] #\@))
+(defparameter sub-delims
+  (list #\! #\$ #\& #\\ #\( #\) #\* #\+ #\, #\; #\=))
 
 (defun parse-userinfo (l)
   (list (car l) (cdr l)))
@@ -48,3 +57,12 @@
 
 (defun deleteFirst (lista)
   (append nil (cdr lista)))
+
+(defun identificatore (x)
+  (cond ((or ;unreserved
+          (numberp x)
+          (alpha-char-p x)
+          (member x '(':' '/' '?' '#' '[' ']' '@'))
+             ;reserved
+             (member x '(':' '/' '?' '#' '[' ']' '@')) ;gen-delims
+             (member x '('!' '$' '&' '\' '(' ')' '*' '+' ',' ';' ',' '=')) ;sub-delims

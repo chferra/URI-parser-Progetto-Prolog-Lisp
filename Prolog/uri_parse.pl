@@ -178,7 +178,7 @@ carattere(C) :- unreserved(C), !.
 %gen-delims
 reserved(C) :- member(C, [':','/','?','#','[',']','@']).
 %sub-delims
-reserved(C) :- member(C, ['!','$','&','\',','(',')','*','+',',',';','=']).
+reserved(C) :- member(C, ['!','$','&','\'','(',')','*','+',',',';','=']).
 
 unreserved(C) :- digit(C), !.
 unreserved(C) :- carattereAlfabetico(C), !.
