@@ -38,54 +38,55 @@ authority(['/','/'|Xs], Rest, UI, H, 80) :-
 authority(['/','/'|Xs], Rest, [], H, P) :-
 						host(Xs, false, RestH, H),
 						port(RestH, Rest, P), !.
-authority(['/','/'|Xs], Rest, [], H, 80) :- host(Xs, false, Rest, H).
 authority(Rest, Rest, [], [], 80).
 
 userinfo(X, _, Rest, Result) :- identificatore(X, Rest, Result), !.
 userinfo(Rest, true, Rest, []).
 
+pqf([], _, [],[],[]).
 pqf(['/'|Xs], Zos, P, Q, F) :-
 						path(Xs, Zos, RestP, P), !,
 						query(RestP, RestQ, Q), !,
 						fragment(RestQ, [], F).
-pqf([], _, [],[],[]).
 
 path(X, false, Rest, Result) :-
-						identificatore(X, RestI, I), !,
+						identificatore(X, RestI, I),
 						identificatori(RestI, Rest, Is), !,
-						my_atomic_concat(I, Is, Result).
+						atomic_concat(I, Is, Result).
 
 path(X, true, Rest, Result) :-
 						id44(X, ['('|Rest44], Res44),
 						id8(Rest44, [')'|Rest], Res8), !,
-						my_atomic_concat('(', Res8, RRes8),
-						my_atomic_concat(RRes8, ')', RRes8R),
-						my_atomic_concat(Res44, RRes8R, Result).
-path(X, true, Rest, Result) :- id44(X, Rest, Result).
+						atomic_concat('(', Res8, RRes8),
+						atomic_concat(RRes8, ')', RRes8R),
+						atomic_concat(Res44, RRes8R, Result).
+path(X, true, Rest, Result) :- id44(X, Rest, Result), !.
+path(X, false, Rest, Result) :- identificatore(X, Rest, Result), !.
 path(Rest, false, Rest, []).
 
 identificatori(['/'|Xs], Rest, Result) :-
-						identificatore(Xs, RestI, I), !,
+						identificatore(Xs, RestI, I),
 						identificatori(RestI, Rest, Is), !,
-						my_atomic_concat('/', I, SlashI),
-						my_atomic_concat(SlashI, Is, Result).
-identificatori(Rest, Rest, []).
+						atomic_concat('/', I, SlashI),
+						atomic_concat(SlashI, Is, Result).
+identificatori(['/'|Xs], Rest, Result) :- 
+						identificatore(Xs, Rest, X),
+						atomic_concat('/', X, Result), !.
 
 query(['?'|Xs], Rest, Result) :-
-						caratteri(Xs, Rest, Result, ['#']),
-						Result \= '', !.
+						caratteri(Xs, Rest, Result, ['#']), !.
 query(Rest, Rest, []).
 
 fragment(['#'|Xs], Rest, Result) :-
-						caratteri(Xs, Rest, Result, []),
-						Result \= '', !.
+						caratteri(Xs, Rest, Result, []), !.
 fragment(Rest, Rest, []).
 
 host(H, _, Rest, Result) :- countGroup(H, Rest, Result, 4).
 host(H, _, Rest, Result) :-
-						identificatore_host(H, RestI, I), !,
+						identificatore_host(H, RestI, I),
 						identificatori_host(RestI, Rest, Is), !,
-						my_atomic_concat(I, Is, Result).
+						atomic_concat(I, Is, Result).
+host(X, _, Rest, Result) :- identificatore_host(X, Rest, Result), !.
 host(Rest, true, Rest, []).
 
 ip(X, Rest, Result) :- countGroup(X, Rest, Result, 4).
@@ -95,8 +96,8 @@ countGroup(['.'|X], Rest, Result, Ngr) :-
 						atom_number(D, Num),
 						between(0, 255, Num), !,
 						countGroup(RestD, Rest, Ds, N),
-						my_atomic_concat('.', D, DotD),
-						my_atomic_concat(DotD, Ds, Result),
+						atomic_concat('.', D, DotD),
+						atomic_concat(DotD, Ds, Result),
 						Ngr is N + 1,
 						Ngr > 0, !.
 
@@ -106,36 +107,37 @@ countGroup(X, Rest, Result, Ngr) :-
 						between(0, 255, Num), !,
 						countGroup(RestD, Rest, Ds, N),
 						Ngr is N + 1,
-						my_atomic_concat(D, Ds, Result),
+						atomic_concat(D, Ds, Result),
 						Ngr > 0, !.
 
-countGroup(Rest, Rest, [], 0).
+countGroup(X, Rest, Result, 0) :- 
+						digits(X, Rest, D),
+						atom_number(D, Result),
+						between(0, 255, Result), !.
 
 identificatori_host(['.'|Xs], Rest, Result) :-
-						identificatore_host(Xs, RestI, I), !,
+						identificatore_host(Xs, RestI, I),
 						identificatori_host(RestI, Rest, Is), !,
-						my_atomic_concat('.', I, DotI),
-						my_atomic_concat(DotI, Is, Result).
-identificatori_host(Rest, Rest, []).
+						atomic_concat('.', I, DotI),
+						atomic_concat(DotI, Is, Result).
+identificatori_host(['.'|Xs], Rest, Result) :- 
+						identificatore_host(Xs, Rest, I),
+						atomic_concat('.', I, Result), !.
 
 identificatore(X, Rest, Result) :-
-						caratteri(X, Rest, Result, ['/','?','#','@',':']),
-						Result \= ''.
+						caratteri(X, Rest, Result, ['/','?','#','@',':']).
 
 identificatore_host(X, Rest, Result) :-
-						caratteri(X, Rest, Result, ['.','/','?','#','@',':']),
-						Result \= ''.
+						caratteri(X, Rest, Result, ['.','/','?','#','@',':']).
 
 id44tail(['.'|Xs], Rest, Result) :-
 						id44tail(Xs, Rest, Res),
-						Res \= '',
-						my_atomic_concat('.', Res, Result).
+						atomic_concat('.', Res, Result).
 id44tail(X, Rest, Result) :-
 						caratteriAN(X, RestCs, Cs),
-						Cs \= '',
 						id44tail(RestCs, Rest, Res), !,
-						my_atomic_concat(Cs, Res, Result).
-id44tail(Rest, Rest, []).
+						atomic_concat(Cs, Res, Result).
+id44tail(X, Rest, Result) :- caratteriAN(X, Rest, Result), !.
 
 id44([X|Xs], Rest, Result) :-
 						carattereAlfabetico(X), !,
@@ -144,31 +146,31 @@ id44([X|Xs], Rest, Result) :-
 						between(1, 44, Ln).
 
 id8(X, Rest, Result) :- caratteriAN(X, Rest, Result),
-						Result \= '',
 						string_length(Result, Ln),
 						between(1, 8, Ln).
 
 port([':'|Xs], Rest, Result) :-
 						digits(Xs, Rest, Ds),
-						atom_number(Ds, Result),
-						Result \= '', !.
+						atom_number(Ds, Result).
 port(Rest, Rest, 80).
 
 caratteriAN([C|Cs], Rest, Result):-
-						carattereAN(C), !,
+						carattereAN(C),
 						caratteriAN(Cs, Rest, R), !,
-						my_atomic_concat(C, R, Result).
-caratteriAN(Rest, Rest, []).
+						atomic_concat(C, R, Result).
+caratteriAN([C|Rest], Rest, C) :- carattereAN(C), !.
 
-carattereAN(C) :- digit(C).
-carattereAN(C) :- carattereAlfabetico(C).
+carattereAN(C) :- digit(C), !.
+carattereAN(C) :- carattereAlfabetico(C), !.
 
 caratteri([C|Cs], Rest, Result, Filtri) :-
-						non_member(C,Filtri), !,
-						carattere(C), !,
+						non_member(C,Filtri),
+						carattere(C),
 						caratteri(Cs, Rest, R, Filtri), !,
-						my_atomic_concat(C, R, Result).
-caratteri(Rest, Rest, '', _).
+						atomic_concat(C, R, Result).
+caratteri([C|Rest], Rest, C, Filtri) :- 
+						non_member(C,Filtri),
+						carattere(C), !.
 
 carattere(C) :- reserved(C), !.
 carattere(C) :- unreserved(C), !.
@@ -195,10 +197,11 @@ upper_az(C) :-
 						N =< 90, !.
 
 digits([D|Ds], Rest, Result) :-
-						digit(D), !,
-						digits(Ds, Rest, R),
-						my_atomic_concat(D, R, Result).
-digits(Rest, Rest, '').
+						digit(D),
+						digits(Ds, Rest, R), !,
+						atomic_concat(D, R, Result).
+digits([D|Rest], Rest, D) :- digit(D), !.
+
 digit(C) :-
 						atom_number(C, D),
 						between(0, 9, D), !.
@@ -234,9 +237,3 @@ uri_display(uri(S, UI, H, Port, Path, Q, F), Stream) :-
 multi_write(Terms) :-
 						atomics_to_string(Terms, Res),
 						writeln(Res).
-
-my_atomic_concat([], [], []) :- !.
-my_atomic_concat([], Y, Y) :- !.
-my_atomic_concat(X, [], X) :- !.
-my_atomic_concat(X, Y, R) :- atomic_concat(X, Y, R), !.
-
