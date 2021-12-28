@@ -17,7 +17,8 @@ scheme-syntax(X, 'mailto', UI, H, 80, [], [], []) :-
 						userinfo(X, false, ['@'|RestUI], UI),
 						host(RestUI, false, [], H).
 
-scheme-syntax(X, 'mailto', UI, [], 80, [], [], []) :- userinfo(X, true, [], UI).
+scheme-syntax(X, 'mailto', UI, [], 80, [], [], []) :-
+						userinfo(X, true, [], UI).
 scheme-syntax(X, 'tel', UI, [], 80, [], [], []) :- userinfo(X, true, [], UI).
 scheme-syntax(X, 'fax', UI, [], 80, [], [], []) :- userinfo(X, true, [], UI).
 scheme-syntax(X, 'news', [], H, 80, [], [], []) :- host(X, true, [], H).
@@ -234,7 +235,7 @@ multi_write(Terms) :-
 						atomics_to_string(Terms, Res),
 						writeln(Res).
 
-my_atomic_concat([], [], []) :- !.					
+my_atomic_concat([], [], []) :- !.
 my_atomic_concat([], Y, Y) :- !.
 my_atomic_concat(X, [], X) :- !.
 my_atomic_concat(X, Y, R) :- atomic_concat(X, Y, R), !.
