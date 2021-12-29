@@ -163,11 +163,15 @@ caratteriAN([C|Rest], Rest, C) :- carattereAN(C), !.
 carattereAN(C) :- digit(C), !.
 carattereAN(C) :- carattereAlfabetico(C), !.
 
+caratteri([' '|Cs], Rest, Result, Filtri) :-
+						caratteri(Cs, Rest, R, Filtri), !,
+						atomic_concat('%20', R, Result).
 caratteri([C|Cs], Rest, Result, Filtri) :-
 						non_member(C,Filtri),
 						carattere(C),
 						caratteri(Cs, Rest, R, Filtri), !,
 						atomic_concat(C, R, Result).
+caratteri([' '|Cs], Cs, '%20', _) :- !.
 caratteri([C|Rest], Rest, C, Filtri) :- 
 						non_member(C,Filtri),
 						carattere(C), !.

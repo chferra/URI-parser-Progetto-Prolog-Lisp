@@ -7,27 +7,10 @@
   query
   fragment)
 
-(defun uri-parse (s)
-  (let* ((strList (mapcar 'string (coerce s 'list)))
-         (scheme (parse-scheme strList))
-         (userinfo (parse-userinfo (second scheme)))
-         (host (parse-host (second userinfo)))
-         (port (parse-port (second host)))
-         (path (parse-path (second port)))
-         (query (parse-query (second path)))
-         (fragment (parse-fragment (second query))))
-    (make-uri-structure
-                   :scheme (car scheme)
-                   :userinfo (car userinfo)
-                   :host (car host)
-                   :port (car port)
-                   :path (car path)
-                   :query (car query)
-                   :fragment (car fragment))))
-
-(defun parse-scheme (l)
-  (let ((res (identificatore l)))
-    (list (car res) (second res))))
+(defstruct partial-res
+  fieldVal
+  rest
+  (failure nil))
 
 (defparameter gen-delims
   (list #\: #\/ #\? #\# #\[ #\] #\@))
@@ -36,8 +19,35 @@
 (defparameter unres-symb
   (list #\- #\. #\_ #\~))
 
-(defun parse-userinfo (l)
-  (list (car l) (second l)))
+(defun uri-parse (s)
+  (let* ((charList (coerce s 'list))
+         (scheme (parse-scheme charList))
+         (userinfo (parse-userinfo scheme))
+         (host (parse-host userinfo))
+         (port (parse-port host))
+         (path (parse-path port))
+         (query (parse-query path))
+         (fragment (parse-fragment query)))
+    (make-uri-structure
+                   :scheme (partial-res-fieldVal scheme)
+                   :userinfo (partial-res-fieldVal userinfo)
+                   :host (partial-res-fieldVal host)
+                   :port (partial-res-fieldVal port)
+                   :path (partial-res-fieldVal path)
+                   :query (partial-res-fieldVal query)
+                   :fragment (partial-res-fieldVal fragment))))
+
+(defun parse-scheme (l)
+  (let ((res (identificatore l)))
+    (make-partial-res 
+     :fieldVal (car res)
+     :rest (delFirstN (second res) 1)
+     :failure (char/= (car (second res)) #\:))))
+
+(defun parse-userinfo (s)
+  (if (partial-res-failure s) s)
+  (let ((res (identificatore l)))
+    (list (car res) (second res))))
 
 (defun parse-host (l)
   (list (car l) (second l)))
@@ -74,3 +84,10 @@
             (member i sub-delims)) 
            (let ((res (caratteri (cdr chrs) filtri)))
              (list (append (list i) (car res)) (second res)))))))
+
+(defun delFirstN (l n)
+  (cond ((< n 0) nil)
+        ((eq n 0) l)
+        ((eq n 1) (cdr l))
+        (T (delFirstN (cdr l) (- n 1)))))
+
