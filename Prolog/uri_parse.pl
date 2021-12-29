@@ -1,3 +1,8 @@
+%%%% -*- Mode: Prolog -*-
+
+%%%% uri_parse.pl
+
+
 %uri(S, UI, H, Port, Path, Q, F).
 %inputTxt(T, Rest, Result) :- string_chars(T, L), path(L, Rest, Result).
 
@@ -237,3 +242,5 @@ uri_display(uri(S, UI, H, Port, Path, Q, F), Stream) :-
 multi_write(Terms) :-
 						atomics_to_string(Terms, Res),
 						writeln(Res).
+						
+%%%% end of file -- uri_parse.pl
