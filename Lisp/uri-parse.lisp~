@@ -66,13 +66,6 @@
             (list (cons #\. (car ide)) (second ide))))
     (list nil s)))
 
-(defun parse-port (s)
-  (if (and (not (null s))
-           (eql (car s) #\:))
-      (let ((ds (digits (delFirstN s 1))))
-        (cond ((null (car ds))
-                (list nil s))
-               (T ds)))))
 
 (defun parse-pqf (s) s)
 
@@ -99,13 +92,6 @@
             (member i sub-delims)) 
            (let ((res (caratteri (cdr chrs) filtri)))
              (list (append (list i) (car res)) (second res)))))))
-
-(defun digits (d)
-  (cond ((and (not (null d))
-         (numberp (digit-char-p (car d)))) 
-         (let ((ds (digits (delFirstN d 1))))
-           (list (append (list (car d)) (car ds)) (second ds))))
-         (T (list nil d))))
 
 (defun delFirstN (l n)
   (cond ((< n 0) nil)
