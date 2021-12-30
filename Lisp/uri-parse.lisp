@@ -7,11 +7,6 @@
   query
   fragment)
 
-(defstruct partial-res
-  fieldVal
-  rest
-  (failure nil))
-
 (defparameter gen-delims
   (list #\: #\/ #\? #\# #\[ #\] #\@))
 (defparameter sub-delims
@@ -22,55 +17,68 @@
 (defun uri-parse (s)
   (let* ((charList (coerce s 'list))
          (scheme (parse-scheme charList))
-         (userinfo (parse-userinfo scheme))
-         (host (parse-host userinfo))
-         (port (parse-port host))
-         (path (parse-path port))
-         (query (parse-query path))
-         (fragment (parse-fragment query)))
+         (auth (parse-auth (cdr scheme)))
+         (pqf (parse-pqf auth)))
     (make-uri-structure
-                   :scheme (partial-res-fieldVal scheme)
-                   :userinfo (partial-res-fieldVal userinfo)
-                   :host (partial-res-fieldVal host)
-                   :port (partial-res-fieldVal port)
-                   :path (partial-res-fieldVal path)
-                   :query (partial-res-fieldVal query)
-                   :fragment (partial-res-fieldVal fragment))))
+                   :scheme (first scheme)
+                   :userinfo (first auth)
+                   :host (second auth)
+                   :port (third auth)
+                   :path (first pqf)
+                   :query (second pqf)
+                   :fragment (third pqf))))
 
 (defun parse-scheme (l)
   (let ((res (identificatore l)))
-    (make-partial-res 
-     :fieldVal (car res)
-     :rest (delFirstN (second res) 1)
-     :failure (char/= (car (second res)) #\:))))
+    (if (and (> (length res) 0)
+         (char= (first (second res)) #\:))    
+        (list (first res) (delFirstN (second res) 1)))))
 
-(defun parse-userinfo (s)
-  (if (partial-res-failure s) s)
-  (let ((res (identificatore l)))
-    (list (car res) (second res))))
+(defun parse-auth (s) 
+  (if (and (not (null s))
+       (doubleSlashT (first s)))
+      (let* ((x (delFirstN (first s) 2))
+              (ui (parse-userinfo1 x))
+              (host (parse-host (second ui)))
+              (port (parse-port (second host))))
+         (list (first ui) (first host) (first port) (second port)))
+    (s)))
 
-(defun parse-host (l)
-  (list (car l) (second l)))
+(defun parse-userinfo1 (s)
+  (let ((res (identificatore s)))
+    (if (and (> (length res) 0)
+             (eql (first (second res)) #\@))
+        (list (first res) (delFirstN (second res) 1))
+      (list nil s))))  
 
-(defun parse-port (l)
-  (list (parse-integer (car l)) (second l)))
+(defun parse-host (s)
+  (if (not (null s))
+      (let ((fide (identificatore-host s)))
+        (if (not (null (car fide)))
+            (let ((pide (parse-host-pide (second fide))))
+              (if (not (null pide))
+                  (list (append (car fide) (car pide)) (second pide))))))))
 
-(defun parse-path (l)
-  (list (car l) (second l)))
+(defun parse-host-pide (s)
+  (if (eql (first s) #\.)
+      (let ((ide (parse-host (delFirstN s 1))))
+        (if (not (null ide))
+            (list (cons #\. (car ide)) (second ide))))
+    (list nil s)))
 
-(defun parse-query (l)
-  (list (car l) (second l)))
 
-(defun parse-fragment (l)
-  (list (car l) (second l)))
-
-(defun deleteFirst (lista)
-  (append nil (second lista)))
+(defun parse-pqf (s) s)
 
 (defun identificatore (x)
-  (let ((res (caratteri x '(#\/ #\? #\# #\@ #\:))))
-    (list (car res) (second res))))
+  (caratteri x '(#\/ #\? #\# #\@ #\:)))
 
+(defun identificatore-host (x)
+  (caratteri x '(#\. #\/ #\? #\# #\@ #\:)))
+
+(defun doubleSlashT (l)
+  (and (char= (first l) (second l))
+       (char= (first l) #\/)))
+       
 (defun caratteri (chrs filtri)
   (let ((i (car chrs))
         (rest (cdr chrs)))
@@ -90,4 +98,3 @@
         ((eq n 0) l)
         ((eq n 1) (cdr l))
         (T (delFirstN (cdr l) (- n 1)))))
-
