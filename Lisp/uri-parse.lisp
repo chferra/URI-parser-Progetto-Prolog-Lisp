@@ -36,8 +36,8 @@
 
 (defun parse-auth (s) 
   (if (and (not (null s))
-       (doubleSlashT (first s)))
-      (let* ((x (delFirstN (first s) 2))
+       (doubleSlashT s))
+      (let* ((x (delFirstN s 2))
               (ui (parse-userinfo1 x))
               (host (parse-host (second ui)))
               (port (parse-port (second host))))
