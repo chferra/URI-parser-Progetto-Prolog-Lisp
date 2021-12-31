@@ -41,11 +41,23 @@
              (ui (parse-userinfo1 x))
              (host (parse-host (second ui)))
              (port (parse-port (second host))))
-        (list (first ui) (first host) (first port) (second port)))
+        (list (first ui)
+              (first host)
+              (first port)
+              (second port)))
     (s)))
 
-;(defun parse-pqf (s) 
-;  (cond (()
+(defun parse-pqf (s) 
+  (cond (((null s) nil)
+         (eql (car s) #\/)
+         (let* ((path (parse-path (cdr s)))
+                (query (parse-query (second path)))
+                (frgmt (parse-fragment (second query))))
+           (list (first path)
+                 (first query) 
+                 (first frgmt) 
+                 (second frgmt))))                      
+         (T (list nil s))))
 
 (defun parse-userinfo1 (s)
   (let ((res (identificatore s)))
@@ -125,6 +137,10 @@
                   (list 80 s))
                  (T ds))))
          (T (list 80 s))))
+
+(defun parse-path (s)
+  )
+  
 
 (defun identificatore (x)
   (caratteri x '(#\/ #\? #\# #\@ #\:)))
