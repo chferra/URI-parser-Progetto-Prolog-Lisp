@@ -48,7 +48,7 @@
               (chrl-to-string (first host))
               (chrl-to-int (first port))
               (second port)))
-    s))
+    (list nil nil 80 s)))
 
 (defun parse-pqf (s) 
   (cond ((null s) s)
