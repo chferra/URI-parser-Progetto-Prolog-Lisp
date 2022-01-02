@@ -72,7 +72,71 @@
            (make-uri-structure
             :scheme (first scheme)
             :userinfo (first ui))))))
-          
+
+(defun parse-zos (scheme)
+  (let* ((auth (parse-auth (second scheme)))
+         (zpqf (parse-zpqf (fourth auth))))
+    (cond ((and (not (null zpqf))
+                (null (fourth zpqf)))
+           (make-uri-structure
+            :scheme (first scheme)
+            :userinfo (first auth)
+            :host (second auth)
+            :port (third auth)
+            :path (first zpqf)
+            :query (second zpqf)
+            :fragment (third zpqf))))))
+
+(defun parse-zpqf (s)  
+   (cond ((eql (car s) #\/)
+          (let ((zpath (parse-zos-path (cdr s))))
+            (cond ((not (null zpath))
+                   (let* ((query (parse-query (second zpath)))
+                          (frgmt (parse-fragment (second query))))
+                     (list
+                      (chrl-to-string (first zpath))
+                      (chrl-to-string (first query))
+                      (chrl-to-string (first frgmt))
+                      (second frgmt)))))))))
+                        
+(defun parse-zos-path (s)
+  (let* ((id44 (parse-id44 s)))
+    (cond ((null (car id44)) nil)
+          ((eql (car (second id44)) #\()
+           (let ((id8 (caratteriAN (cdr (second id44)))))
+             (cond ((and (eql (car (second id8)) #\))
+                         (not (null (car id8)))
+                         (<= (length (car id8)) 8))
+                    (list
+                     (chrl-to-string (append (car id44)
+                                             '(#\()
+                                             (car id8)
+                                             '(#\))))
+                     (cdr (second id8))))
+                   (T (list (chrl-to-string (car id44))
+                                            (second id44))))))
+           (T (list
+               (chrl-to-string (car id44))
+               (second id44))))))
+
+(defun parse-id44 (s)
+  (cond ((alpha-char-p (car s))
+         (parse-id44-Cs s))))
+
+(defun parse-id44-Cs (s)
+  (let ((fcs (caratteriAN s)))
+    (if (not (null (car fcs)))
+        (let ((pcs (parse-id44-pCs (second fcs))))
+          (if (not (null pcs))
+              (list (append (car fcs) (car pcs)) (second pcs)))))))
+
+(defun parse-id44-pCs (s)
+  (if (eql (first s) #\.)
+      (let ((cs (parse-id44-Cs (cdr s))))
+        (if (not (null cs))
+            (list (cons #\. (car cs)) (second cs))))
+    (list nil s)))
+     
 (defun parse-scheme (l)
   (let ((res (identificatore l)))
     (if (and (> (length res) 0)
@@ -212,7 +276,8 @@
     (if (not (null (car fide)))
         (let ((pide (parse-path-sp (second fide))))
           (if (not (null (car pide)))
-              (list (chrl-to-string (append (car fide) (car pide))) (second pide))
+              (list (chrl-to-string (append (car fide) (car pide)))
+                    (second pide))
             fide))
       (list nil s))))
 
@@ -265,7 +330,23 @@
              (cond ((eql i #\Space)
                     (list (append (list #\% #\2 #\0) (car res)) (second res)))
                    (T 
-                    (list (append (list i) (car res)) (second res)))))))))
+                    (list (append (list i) (car res)) (second res))))))
+           (T (list nil chrs)))))
+
+(defun caratteriAN (chrs)
+  (let ((i (car chrs))
+        (rest (cdr chrs)))
+    (cond ((null i)
+           (list nil chrs))
+          ((or 
+            (alphanumericp i)
+            (eql i #\Space))
+           (let ((res (caratteriAN (cdr chrs))))
+             (cond ((eql i #\Space)
+                    (list (append (list #\% #\2 #\0) (car res)) (second res)))
+                   (T 
+                    (list (append (list i) (car res)) (second res))))))
+           (T (list nil chrs)))))
 
 (defun digits (d)
   (cond ((and (not (null d))
