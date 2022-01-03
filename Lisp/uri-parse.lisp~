@@ -120,8 +120,7 @@
                (second id44))))))
 
 (defun parse-id44 (s)
-  (cond ((and (not (null s))
-              (alpha-char-p (car s)))
+  (cond ((alpha-char-p (car s))
          (parse-id44-Cs s))))
 
 (defun parse-id44-Cs (s)

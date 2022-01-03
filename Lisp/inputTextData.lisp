@@ -69,7 +69,7 @@
 
 
 (uri-parse "zos://Uinfo@")	;V
-(uri-parse "zos://Uinfo@HostX.yz/")	;XXXXX     Error: NIL (of type NULL) is not of type CHARACTER.
+(uri-parse "zos://Uinfo@HostX.yz/")	;V	CORRETTO
 (uri-parse "zos://Uinfo@HostX:85/.?QueryXyZ#Fragment-01")	;V
 (uri-parse "zos://Uinfo@HostX:85/.(id8Val)#Fragment-01")	;V
 (uri-parse "zos://Uinfo@HostX:85/IDV(id8).ID44val(id8Val)?QueryXyZ#Fragment-01")    ;V
