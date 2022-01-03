@@ -74,6 +74,6 @@
 (uri-parse "zos://Uinfo@HostX:85/.(id8Val)#Fragment-01")	;V
 (uri-parse "zos://Uinfo@HostX:85/IDV(id8).ID44val(id8Val)?QueryXyZ#Fragment-01")    ;V
 (uri-parse "zos://Uinfo@HostX:85/IDV.ID44val.?QueryXyZ#Fragment-01")    ;V
-(uri-parse "zos://Uinfo@200.200.201.203/ID441234567890123456789012345678901234567890A?QueryXyZ#Fragment-01")    ;XXXXX    NON vede il superamento dei 44 cratteri per "id44"
+(uri-parse "zos://Uinfo@200.200.201.203/ID441234567890123456789012345678901234567890A?QueryXyZ#Fragment-01")    ;XXXXX    NON vede il superamento dei 64 caratteri per ciascun campo
 (uri-parse "zos://Uinfo@HostX/1IDV.ID44val?QueryXyZ#Fragment-01")    ;V
 
