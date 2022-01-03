@@ -9,7 +9,9 @@
 uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 						string_chars(L, URI),
 						scheme(URI, URIexcS, S),
-						member(S, ['mailto', 'tel', 'fax', 'news', 'zos']), !,
+						downcase_atom(S, FixedS),
+						member(FixedS,
+						       ['mailto', 'tel', 'fax', 'news', 'zos']), !,
 						scheme-syntax(URIexcS, S, UI, H, Port, Path, Q, F), !.
 
 uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
@@ -18,16 +20,25 @@ uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 						authority(URIexcS, URIexcSA, UI, H, Port),
 						pqf(URIexcSA, false, Path, Q, F), !.
 
-scheme-syntax(X, 'mailto', UI, H, 80, [], [], []) :-
+scheme-syntax(X, Spattern, UI, H, 80, [], [], []) :-
+						downcase_atom(Spattern, 'mailto'),
 						userinfo(X, false, ['@'|RestUI], UI),
 						host(RestUI, false, [], H).
 
-scheme-syntax(X, 'mailto', UI, [], 80, [], [], []) :-
+scheme-syntax(X, Spattern, UI, [], 80, [], [], []) :-
+						downcase_atom(Spattern, 'mailto'),
 						userinfo(X, true, [], UI).
-scheme-syntax(X, 'tel', UI, [], 80, [], [], []) :- userinfo(X, true, [], UI).
-scheme-syntax(X, 'fax', UI, [], 80, [], [], []) :- userinfo(X, true, [], UI).
-scheme-syntax(X, 'news', [], H, 80, [], [], []) :- host(X, true, [], H).
-scheme-syntax(X, 'zos', UI, H, Port, Path, Q, F) :-
+scheme-syntax(X, Spattern, UI, [], 80, [], [], []) :- 
+						downcase_atom(Spattern, 'tel'),
+						userinfo(X, true, [], UI).
+scheme-syntax(X, Spattern, UI, [], 80, [], [], []) :- 
+						downcase_atom(Spattern, 'fax'),
+						userinfo(X, true, [], UI).
+scheme-syntax(X, Spattern, [], H, 80, [], [], []) :- 
+						downcase_atom(Spattern, 'news'),
+						host(X, true, [], H).
+scheme-syntax(X, Spattern, UI, H, Port, Path, Q, F) :-
+						downcase_atom(Spattern, 'zos'),
 						authority(X, URIexcA, UI, H, Port),
 						pqf(URIexcA, true, Path, Q, F), !.
 
@@ -74,7 +85,7 @@ identificatori(['/'|Xs], Rest, Result) :-
 						identificatori(RestI, Rest, Is), !,
 						atomic_concat('/', I, SlashI),
 						atomic_concat(SlashI, Is, Result).
-identificatori(['/'|Xs], Rest, Result) :- 
+identificatori(['/'|Xs], Rest, Result) :-
 						identificatore(Xs, Rest, X),
 						atomic_concat('/', X, Result), !.
 
@@ -115,7 +126,7 @@ countGroup(X, Rest, Result, Ngr) :-
 						atomic_concat(D, Ds, Result),
 						Ngr > 0, !.
 
-countGroup(X, Rest, Result, 0) :- 
+countGroup(X, Rest, Result, 0) :-
 						digits(X, Rest, D),
 						atom_number(D, Result),
 						between(0, 255, Result), !.
@@ -125,7 +136,7 @@ identificatori_host(['.'|Xs], Rest, Result) :-
 						identificatori_host(RestI, Rest, Is), !,
 						atomic_concat('.', I, DotI),
 						atomic_concat(DotI, Is, Result).
-identificatori_host(['.'|Xs], Rest, Result) :- 
+identificatori_host(['.'|Xs], Rest, Result) :-
 						identificatore_host(Xs, Rest, I),
 						atomic_concat('.', I, Result), !.
 
@@ -177,7 +188,7 @@ caratteri([C|Cs], Rest, Result, Filtri) :-
 						caratteri(Cs, Rest, R, Filtri), !,
 						atomic_concat(C, R, Result).
 caratteri([' '|Cs], Cs, '%20', _) :- !.
-caratteri([C|Rest], Rest, C, Filtri) :- 
+caratteri([C|Rest], Rest, C, Filtri) :-
 						non_member(C,Filtri),
 						carattere(C), !.
 
@@ -217,7 +228,7 @@ digit(C) :-
 
 non_member(X, [X|_]) :- !, fail.
 non_member(X, [_|Xs]) :- !, non_member(X, Xs).
-non_member(_, []).
+non_member(_, []).		
 
 uri_display(uri(S, UI, H, Port, Path, Q, F)) :-
 						multi_write(['Schema: ', S]),
@@ -246,5 +257,5 @@ uri_display(uri(S, UI, H, Port, Path, Q, F), Stream) :-
 multi_write(Terms) :-
 						atomics_to_string(Terms, Res),
 						writeln(Res).
-						
+
 %%%% end of file -- uri_parse.pl

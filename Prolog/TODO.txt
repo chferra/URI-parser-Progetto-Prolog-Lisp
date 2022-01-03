@@ -1,0 +1,1 @@
+case insensitivity per lo scheme
