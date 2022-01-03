@@ -340,14 +340,10 @@
     (cond ((null i)
            (list nil chrs))
           ((or 
-            (alphanumericp i)
-            (eql i #\Space))
+            (alphanumericp i))
            (let ((res (caratteriAN (cdr chrs))))
-             (cond ((eql i #\Space)
-                    (list (append (list #\% #\2 #\0) (car res)) (second res)))
-                   (T 
-                    (list (append (list i) (car res)) (second res))))))
-           (T (list nil chrs)))))
+                    (list (append (list i) (car res)) (second res))))
+          (T (list nil chrs)))))
 
 (defun digits (d)
   (cond ((and (not (null d))

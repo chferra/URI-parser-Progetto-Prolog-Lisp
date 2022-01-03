@@ -122,7 +122,9 @@
 (defun parse-id44 (s)
   (cond ((and (not (null s))
               (alpha-char-p (car s)))
-         (parse-id44-Cs s))))
+         (let ((res (parse-id44-Cs s)))
+           (cond ((<= (length (car res)) 44)
+                  res))))))
 
 (defun parse-id44-Cs (s)
   (let ((fcs (caratteriAN s)))
