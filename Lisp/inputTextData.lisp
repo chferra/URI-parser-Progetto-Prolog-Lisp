@@ -10,7 +10,7 @@
 (uri-parse "http://192.168.1.34/myServer/line/one")	;V	
 (uri-parse "http://Uinfo@192.168.1.34/myServer/line/one")	;V 
 
-(uri-parse "http://Uinfo@HostX:85/myServer?QueryXyZ#Fragment-01)	;V
+(uri-parse "http://Uinfo@HostX:85/myServer?QueryXyZ#Fragment-0")	;V
 (uri-parse "http://Uinfo@HostX/myServer")	;V
 (uri-parse "http://192.168.1.34/myServer")	;V
 (uri-parse "http://Uinfo@192.168.1.234")	;V
@@ -18,7 +18,7 @@
 (uri-parse "http://Uinfo@HostX")	;V
 (uri-parse "http://HostX/myServer") 	;V
 
-(uri-parse "http://Uinfo/myServer/line/one?QueryXyZ#Fragment-01")	;V
+(uri-parse "http://UinfoHost/myServer/line/one?QueryXyZ#Fragment-01")	;V
 (uri-parse "http://Uinfo@Host/myServer/line/one?Query#XyZ#Fragment-01")	;V
 
 (uri-parse "mailto:Uinfo@HostX")	;V
@@ -41,6 +41,8 @@
 (uri-parse "zos://Uinfo@HostX.yz/ID44?QueryXyZ")	;V
 (uri-parse "zos://Uinfo@200.200.201.203/ID44?QueryXyZ#Fragment-01")	;V
 
+(uri-parse "mailtO:Uinfo@HostX")	;V
+
 %
 %  Chiamate che devono generare errore 
 %
@@ -58,8 +60,6 @@
 
 (uri-parse "news:HostsX/A")	;V
 (uri-parse "news:HostsX:A")	;V
-(uri-parse "mailtO:Uinfo@HostX")	;XXXXX   Non discrimina la "o" maiuscola  >> forse in Lisp OK
-                                    ;Y corretto in uri-parseNew alla riga 249
 (uri-parse "mailto:Uinfo@HostX.")	;V
 (uri-parse "mailto://Uinfo@HostX/myServer/line/one?QueryXyZ#Fragment-01")	;V
 (uri-parse "mailto:Uinfo@HostX/myServer")	;V
@@ -69,11 +69,11 @@
 
 
 (uri-parse "zos://Uinfo@")	;V
-(uri-parse "zos://Uinfo@HostX.yz/")	;V	CORRETTO
+(uri-parse "zos://Uinfo@HostX.yz/")	;V
 (uri-parse "zos://Uinfo@HostX:85/.?QueryXyZ#Fragment-01")	;V
 (uri-parse "zos://Uinfo@HostX:85/.(id8Val)#Fragment-01")	;V
 (uri-parse "zos://Uinfo@HostX:85/IDV(id8).ID44val(id8Val)?QueryXyZ#Fragment-01")    ;V
 (uri-parse "zos://Uinfo@HostX:85/IDV.ID44val.?QueryXyZ#Fragment-01")    ;V
-(uri-parse "zos://Uinfo@200.200.201.203/ID441234567890123456789012345678901234567890A?QueryXyZ#Fragment-01")    ;XXXXX    NON vede il superamento dei 64 caratteri per ciascun campo
+(uri-parse "zos://Uinfo@200.200.201.203/ID441234567890123456789012345678901234567890A?QueryXyZ#Fragment-01")    ;V
 (uri-parse "zos://Uinfo@HostX/1IDV.ID44val?QueryXyZ#Fragment-01")    ;V
 
