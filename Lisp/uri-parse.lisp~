@@ -357,3 +357,9 @@
          (let ((ds (digits (cdr d))))
            (list (append (list (car d)) (car ds)) (second ds))))
         (T (list nil d))))
+
+(defun delFirstN (l n)
+  (cond ((< n 0) nil)
+        ((eq n 0) l)
+        ((eq n 1) (cdr l))
+        (T (delFirstN (cdr l) (- n 1)))))
