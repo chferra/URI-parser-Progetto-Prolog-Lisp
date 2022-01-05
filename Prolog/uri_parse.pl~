@@ -42,8 +42,7 @@ scheme-syntax(X, Spattern, UI, H, Port, Path, Q, F) :-
 						authority(X, URIexcA, UI, H, Port),
 						pqf(URIexcA, true, Path, Q, F), !.
 
-scheme(X, Rest, Result) :-
-						identificatore(X, [':'|Rest], Result).
+scheme(X, Rest, Result) :- identificatore(X, [':'|Rest], Result).
 
 authority(['/','/'|Xs], Rest, UI, H, P) :-
 						userinfo(Xs, true, ['@'|RestUI], UI),
@@ -57,8 +56,7 @@ authority(['/','/'|Xs], Rest, [], H, P) :-
 						port(RestH, Rest, P), !.
 authority(Rest, Rest, [], [], 80).
 
-userinfo(X, _, Rest, Result) :-
-						identificatore(X, Rest, Result), !.
+userinfo(X, _, Rest, Result) :- identificatore(X, Rest, Result), !.
 userinfo(Rest, true, Rest, []).
 
 pqf([], _, [],[],[]).
@@ -78,10 +76,8 @@ path(X, true, Rest, Result) :-
 						atomic_concat('(', Res8, RRes8),
 						atomic_concat(RRes8, ')', RRes8R),
 						atomic_concat(Res44, RRes8R, Result).
-path(X, true, Rest, Result) :-
-						id44(X, Rest, Result), !.
-path(X, false, Rest, Result) :-
-						identificatore(X, Rest, Result), !.
+path(X, true, Rest, Result) :- id44(X, Rest, Result), !.
+path(X, false, Rest, Result) :- identificatore(X, Rest, Result), !.
 path(Rest, false, Rest, []).
 
 identificatori(['/'|Xs], Rest, Result) :-
@@ -101,18 +97,15 @@ fragment(['#'|Xs], Rest, Result) :-
 						caratteri(Xs, Rest, Result, []), !.
 fragment(Rest, Rest, []).
 
-host(H, _, Rest, Result) :-
-						countGroup(H, Rest, Result, 4).
+host(H, _, Rest, Result) :- countGroup(H, Rest, Result, 4).
 host(H, _, Rest, Result) :-
 						identificatore_host(H, RestI, I),
 						identificatori_host(RestI, Rest, Is), !,
 						atomic_concat(I, Is, Result).
-host(X, _, Rest, Result) :-
-						identificatore_host(X, Rest, Result), !.
+host(X, _, Rest, Result) :- identificatore_host(X, Rest, Result), !.
 host(Rest, true, Rest, []).
 
-ip(X, Rest, Result) :-
-						countGroup(X, Rest, Result, 4).
+ip(X, Rest, Result) :- countGroup(X, Rest, Result, 4).
 
 countGroup(['.'|X], Rest, Result, Ngr) :-
 						digits(X, RestD, D),
@@ -160,8 +153,7 @@ id44tail(X, Rest, Result) :-
 						caratteriAN(X, RestCs, Cs),
 						id44tail(RestCs, Rest, Res), !,
 						atomic_concat(Cs, Res, Result).
-id44tail(X, Rest, Result) :-
-						caratteriAN(X, Rest, Result), !.
+id44tail(X, Rest, Result) :- caratteriAN(X, Rest, Result), !.
 
 id44([X|Xs], Rest, Result) :-
 						carattereAlfabetico(X), !,
@@ -169,8 +161,7 @@ id44([X|Xs], Rest, Result) :-
 						string_length(Result, Ln),
 						between(1, 44, Ln).
 
-id8(X, Rest, Result) :-
-						caratteriAN(X, Rest, Result),
+id8(X, Rest, Result) :- caratteriAN(X, Rest, Result),
 						string_length(Result, Ln),
 						between(1, 8, Ln).
 
@@ -185,10 +176,8 @@ caratteriAN([C|Cs], Rest, Result):-
 						atomic_concat(C, R, Result).
 caratteriAN([C|Rest], Rest, C) :- carattereAN(C), !.
 
-carattereAN(C) :-
-						digit(C), !.
-carattereAN(C) :-
-						carattereAlfabetico(C), !.
+carattereAN(C) :- digit(C), !.
+carattereAN(C) :- carattereAlfabetico(C), !.
 
 caratteri([' '|Cs], Rest, Result, Filtri) :-
 						caratteri(Cs, Rest, R, Filtri), !,
@@ -203,17 +192,13 @@ caratteri([C|Rest], Rest, C, Filtri) :-
 						non_member(C,Filtri),
 						carattere(C), !.
 
-carattere(C) :-
-						reserved(C), !.
-carattere(C) :-
-						unreserved(C), !.
+carattere(C) :- reserved(C), !.
+carattere(C) :- unreserved(C), !.
 
 %gen-delims
-reserved(C) :-
-						member(C, [':','/','?','#','[',']','@']).
+reserved(C) :- member(C, [':','/','?','#','[',']','@']).
 %sub-delims
-reserved(C) :-
-						member(C, ['!','$','&','\'','(',')','*','+',',',';','=']).
+reserved(C) :- member(C, ['!','$','&','\'','(',')','*','+',',',';','=']).
 
 unreserved(C) :- digit(C), !.
 unreserved(C) :- carattereAlfabetico(C), !.

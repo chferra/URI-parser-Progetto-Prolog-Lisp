@@ -17,14 +17,14 @@
 (defun uri-parse (s)
   (let* ((charList (coerce s 'list))
          (scheme (parse-scheme charList)))
-  (cond ((null scheme) nil)
-        ((member-string (car scheme) (list "mailto"
-                                       "news"
-                                       "tel"
-                                       "fax"
-                                       "zos"))
-         (uri-parseU2 scheme))
-        (T (uri-parseU1 scheme)))))
+    (cond ((null scheme) nil)
+          ((member-string (car scheme) (list "mailto"
+                                             "news"
+                                             "tel"
+                                             "fax"
+                                             "zos"))
+           (uri-parseU2 scheme))
+          (T (uri-parseU1 scheme)))))
 
 (defun uri-parseU1 (scheme)
   (let* ((auth (parse-auth (second scheme)))
@@ -87,18 +87,18 @@
             :query (second zpqf)
             :fragment (third zpqf))))))
 
-(defun parse-zpqf (s)  
-   (cond ((eql (car s) #\/)
-          (let ((zpath (parse-zos-path (cdr s))))
-            (cond ((not (null zpath))
-                   (let* ((query (parse-query (second zpath)))
-                          (frgmt (parse-fragment (second query))))
-                     (list
-                      (chrl-to-string (first zpath))
-                      (chrl-to-string (first query))
-                      (chrl-to-string (first frgmt))
-                      (second frgmt)))))))))
-                        
+(defun parse-zpqf (s)
+  (cond ((eql (car s) #\/)
+         (let ((zpath (parse-zos-path (cdr s))))
+           (cond ((not (null zpath))
+                  (let* ((query (parse-query (second zpath)))
+                         (frgmt (parse-fragment (second query))))
+                    (list
+                     (chrl-to-string (first zpath))
+                     (chrl-to-string (first query))
+                     (chrl-to-string (first frgmt))
+                     (second frgmt)))))))))
+
 (defun parse-zos-path (s)
   (let* ((id44 (parse-id44 s)))
     (cond ((null (car id44)) nil)
@@ -118,7 +118,7 @@
            (T (list
                (chrl-to-string (car id44))
                (second id44))))))
-	   
+
 (defun parse-id44 (s)
   (cond ((and (not (null s))
               (alpha-char-p (car s)))
@@ -139,29 +139,29 @@
         (cond ((not (null cs))
             (list (cons #\. (car cs)) (second cs))))))
        (T (list nil s))))
-     
+
 (defun parse-scheme (l)
   (let ((res (identificatore l)))
     (cond ((and (> (length res) 0)
-         (char= (first (second res)) #\:))    
+         (char= (first (second res)) #\:))
         (list (chrl-to-string (first res)) (cdr (second res)))))))
 
-(defun parse-auth (s)  
+(defun parse-auth (s)
   (cond ((and (not (null s))
               (doubleSlashT s))
-         (let* ((x (cdr (cdr s))) 
-               (ui (parse-userinfo1 x))
-               (host (parse-host (second ui)))
-               (port (parse-port host)))
+         (let* ((x (cdr (cdr s)))
+                (ui (parse-userinfo1 x))
+                (host (parse-host (second ui)))
+                (port (parse-port host)))
            (cond ((not (null (car host)))
                   (list (first ui)
-                       (first host)
-                       (first port)
-                       (second port)))
+                        (first host)
+                        (first port)
+                        (second port)))
                  (T (list nil nil 80 s)))))
         (T (list nil nil 80 s))))
 
-(defun parse-pqf (s) 
+(defun parse-pqf (s)
   (cond ((eql (car s) #\/)
          (let* ((path (parse-path (cdr s)))
                 (query (parse-query (second path)))
@@ -169,7 +169,7 @@
            (list (chrl-to-string (first path))
                  (first query)
                  (first frgmt)
-                 (second frgmt))))                    
+                 (second frgmt))))
         (T (list nil nil nil s))))
 
 (defun parse-userinfo1 (s)
@@ -184,7 +184,7 @@
     (cond ((> (length res) 0)
         (list (chrl-to-string (first res)) (second res)))
       (T (list nil s)))))
-         
+
 (defun parse-host2 (s)
   (cond ((and (not (null (car s)))
               (eql (car (second s)) #\@))
@@ -206,13 +206,13 @@
 (defun parse-hostIP (s n)
   (cond ((= n 1)
          (oct s))
-        (T 
+        (T
          (let ((o (oct s)))
            (cond ((not (null (car o)))
-               (let ((octs (parse-hostIP-poct (second o) 
+               (let ((octs (parse-hostIP-poct (second o)
                                               (- n 1))))
                  (cond ((not (null (car octs)))
-                     (list (append (car o) (car octs)) 
+                     (list (append (car o) (car octs))
                            (second octs)))))))))))
 
 (defun parse-hostIP-poct (s n)
@@ -237,11 +237,11 @@
          nil)
         ((null (cdr l))
          (digit-char-p (car l)))
-        (T 
+        (T
          (let ((o (chrl-to-int (cdr l))))
            (cond ((not (null o))
-               (+ (* (digit-char-p (car l)) 
-                     (expt 10 (- (length l) 1))) 
+               (+ (* (digit-char-p (car l))
+                     (expt 10 (- (length l) 1)))
                   o)))))))
 
 (defun chrl-to-string (l)
@@ -250,7 +250,7 @@
 
 (defun member-string (s l)
   (not (null (member T (mapcar #'(lambda (x) (equalp s x)) l)))))
-            
+
 (defun parse-hostID (s)
   (let ((fide (identificatore-host s)))
     (cond ((not (null (car fide)))
@@ -316,7 +316,7 @@
 (defun doubleSlashT (l)
   (and (char= (first l) (second l))
        (char= (first l) #\/)))
-       
+
 (defun caratteri (chrs filtri)
   (let ((i (car chrs))
         (rest (cdr chrs)))
@@ -328,35 +328,35 @@
             (member i unres-symb)
             (member i gen-delims) ;reserved
             (member i sub-delims)
-            (eql i #\Space)) 
+            (eql i #\Space))
            (let ((res (caratteri (cdr chrs) filtri)))
              (cond ((eql i #\Space)
                     (list (append (list #\% #\2 #\0) (car res)) (second res)))
-                   (T 
+                   (T
                     (list (append (list i) (car res)) (second res))))))
-           (T (list nil chrs)))))
+          (T (list nil chrs)))))
 
 (defun caratteriAN (chrs)
   (let ((i (car chrs))
         (rest (cdr chrs)))
     (cond ((null i)
            (list nil chrs))
-          ((or 
+          ((or
             (alphanumericp i)
             (eql i #\Space))
            (let ((res (caratteriAN (cdr chrs))))
              (cond ((eql i #\Space)
                     (list (append (list #\% #\2 #\0) (car res)) (second res)))
-                   (T 
+                   (T
                     (list (append (list i) (car res)) (second res))))))
            (T (list nil chrs)))))
 
 (defun digits (d)
   (cond ((and (not (null d))
-         (numberp (digit-char-p (car d)))) 
+              (numberp (digit-char-p (car d))))
          (let ((ds (digits (cdr d))))
            (list (append (list (car d)) (car ds)) (second ds))))
-         (T (list nil d))))
+        (T (list nil d))))
 
 (defun delFirstN (l n)
   (cond ((< n 0) nil)
