@@ -36,6 +36,12 @@ uri_parse("zos://Uinfo@HostX.yz/ID44?QueryXyZ", URI).	%V
 uri_parse("zos://Uinfo@200.200.201.203/ID44?QueryXyZ#Fragment-01", URI).	%V
 
 uri_parse("mailtO:Uinfo@HostX", URI).	%V
+uri_parse("http://Uinfo@HostX:85/my Server/line/one?QueryXyZ#Fragment-01", URI).	;V
+uri_parse("http://Uinfo@HostX:85/my Server/line/one?QueryXyZ#Fragment-01", URI).	;V
+uri_parse("http://U info@HostX:85/my Server/line/one?QueryXyZ#Fragment /01", URI).	;V
+uri_parse("http://U info@Host X:85/my Server/line/one?QueryXyZ#Fragment-01", URI).	;V
+uri_parse("htt p://Uinfo@HostX:85/my Server/line/one?QueryXyZ#Fragment-01", URI).	;V
+uri_parse("zo s://U info@Host X:85/IDV44a.ID44 b(id8 Val)?Query XyZ#Fragment 01", URI).	;V
 
 %
 %  Chiamate che devono generare errore 

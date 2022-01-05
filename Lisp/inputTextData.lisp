@@ -42,6 +42,12 @@
 (uri-parse "zos://Uinfo@200.200.201.203/ID44?QueryXyZ#Fragment-01")	;V
 
 (uri-parse "mailtO:Uinfo@HostX")	;V
+(uri-parse "http://Uinfo@HostX:85/my Server/line/one?QueryXyZ#Fragment-01")	;V
+(uri-parse "http://Uinfo@HostX:85/my Server/line/one?QueryXyZ#Fragment-01")	;V
+(uri-parse "http://U info@HostX:85/my Server/line/one?Query XyZ#Fragment /01")	;V
+(uri-parse "http://U info@Host X:85/my Server/line/one?QueryXyZ#Fragment-01")	;V
+(uri-parse "htt p://Uinfo@HostX:85/my Server/line/one?QueryXyZ#Fragment-01")	;V
+(uri-parse "zo s://U info@Host X:85/IDV44a.ID44 b(id8 Val)?Query XyZ#Fragment 01")	;V
 
 %
 %  Chiamate che devono generare errore 
