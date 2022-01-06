@@ -50,6 +50,9 @@
         ((equalp (car scheme) "zos")
          (parse-zos scheme))))
 
+(defun uri-scheme (uriS-p)
+  (uri-structure-scheme uriS-p))
+
 (defun parse-mailto (scheme)
   (let* ((ui (parse-userinfo2 scheme))
          (host (parse-host2 ui)))
@@ -222,7 +225,6 @@
                   (list (cons #\. (car oct)) (second oct))))))
         (T (list nil s))))
 
-
 (defun oct (s)
   (let* ((ds (digits s))
          (octn (chrl-to-int (car ds))))
@@ -357,9 +359,3 @@
          (let ((ds (digits (cdr d))))
            (list (append (list (car d)) (car ds)) (second ds))))
         (T (list nil d))))
-
-(defun delFirstN (l n)
-  (cond ((< n 0) nil)
-        ((eq n 0) l)
-        ((eq n 1) (cdr l))
-        (T (delFirstN (cdr l) (- n 1)))))
