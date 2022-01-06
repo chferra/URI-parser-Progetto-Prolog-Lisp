@@ -53,7 +53,7 @@
 (defun uri-scheme (uriS-p)
   (cond ((uri-structure-p uriS-p)
          (uri-structure-scheme uriS-p))
-        (T (error "Il parametro deve essere una uri-structure"))))
+        (T (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun parse-mailto (scheme)
   (let* ((ui (parse-userinfo2 scheme))
