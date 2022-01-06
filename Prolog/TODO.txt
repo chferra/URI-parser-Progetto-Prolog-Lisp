@@ -1,0 +1,1 @@
+open e close fuori da uri_display

@@ -51,7 +51,8 @@
          (parse-zos scheme))))
 
 (defun uri-scheme (uriS-p)
-  (uri-structure-scheme uriS-p))
+  (cond ((uri-structure-p uriS-p)
+         (uri-structure-scheme uriS-p))))
 
 (defun parse-mailto (scheme)
   (let* ((ui (parse-userinfo2 scheme))
