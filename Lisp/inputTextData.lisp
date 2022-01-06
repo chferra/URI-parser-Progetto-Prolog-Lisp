@@ -83,3 +83,17 @@
 (uri-parse "zos://Uinfo@200.200.201.203/ID441234567890123456789012345678901234567890A?QueryXyZ#Fragment-01")    ;V
 (uri-parse "zos://Uinfo@HostX/1IDV.ID44val?QueryXyZ#Fragment-01")    ;V
 
+%
+% Chiamate alle funzioni ausiliarie
+%
+
+(uri-scheme(uri-parse "http://Uinfo@HostX:85/myServer/line/one?QueryXyZ#Fragment-01"))    ;V
+(uri-userinfo(uri-parse "http://Uinfo@HostX:85/myServer/line/one?QueryXyZ#Fragment-01"))    ;V
+(uri-host(uri-parse "http://Uinfo@HostX:85/myServer/line/one?QueryXyZ#Fragment-01"))    ;V
+(uri-port(uri-parse "http://Uinfo@HostX:85/myServer/line/one?QueryXyZ#Fragment-01"))    ;V
+(uri-path(uri-parse "http://Uinfo@HostX:85/myServer/line/one?QueryXyZ#Fragment-01"))    ;V
+(uri-query(uri-parse "http://Uinfo@HostX:85/myServer/line/one?QueryXyZ#Fragment-01"))    ;V
+(uri-fragment(uri-parse "http://Uinfo@HostX:85/myServer/line/one?QueryXyZ#Fragment-01"))    ;V
+
+(uri-display(uri-parse "http://Uinfo@HostX:85/myServer/line/one?QueryXyZ#Fragment-01"))
+(uri-display(uri-parse "http://Uinfo@HostX:85/myServer/line/one?QueryXyZ#Fragment-01") *standard-output*) 
