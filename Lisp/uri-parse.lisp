@@ -87,10 +87,10 @@
 
 (defun uri-display (uriS-p &optional (out *standard-output*))
   (cond ((uri-structure-p uriS-p)
-            (format out (concatenate 'string "URI display: ~%     Schema: ~S~%"
-										   "     Userinfo: ~S~%     Host: ~S~%"
-										   "     Port: ~S~%     Path: ~S~%"
-										   "     Query: ~S~%     Fragment: ~S~%") 
+        (format out (concatenate 'string "URI display: ~%     Schema: ~S~%"
+							"     Userinfo: ~S~%     Host: ~S~%"
+							"     Port: ~S~%     Path: ~S~%"
+							"     Query: ~S~%     Fragment: ~S~%") 
 		        (uri-structure-scheme uriS-p)
 				(uri-structure-userinfo uriS-p)
 				(uri-structure-host uriS-p)
@@ -99,7 +99,7 @@
 				(uri-structure-query uriS-p)
 				(uri-structure-fragment uriS-p)
 		    )
-		 )
+		)
         (T (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun parse-mailto (scheme)
