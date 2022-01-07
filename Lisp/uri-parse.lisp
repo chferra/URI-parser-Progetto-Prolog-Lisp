@@ -58,32 +58,32 @@
 (defun uri-userinfo (uriS-p)
   (cond ((uri-structure-p uriS-p)
          (uri-structure-userinfo uriS-p))
-        (T (error "Il parametro deve essere una uri-structure"))))
+        (T (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun uri-host (uriS-p)
   (cond ((uri-structure-p uriS-p)
          (uri-structure-host uriS-p))
-        (T (error "Il parametro deve essere una uri-structure"))))
+        (T (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun uri-port (uriS-p)
   (cond ((uri-structure-p uriS-p)
          (uri-structure-port uriS-p))
-        (T (error "Il parametro deve essere una uri-structure"))))
+        (T (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun uri-path (uriS-p)
   (cond ((uri-structure-p uriS-p)
          (uri-structure-path uriS-p))
-        (T (error "Il parametro deve essere una uri-structure"))))
+        (T (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun uri-query (uriS-p)
   (cond ((uri-structure-p uriS-p)
          (uri-structure-query uriS-p))
-        (T (error "Il parametro deve essere una uri-structure"))))
+        (T (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun uri-fragment (uriS-p)
   (cond ((uri-structure-p uriS-p)
          (uri-structure-fragment uriS-p))
-        (T (error "Il parametro deve essere una uri-structure"))))
+        (T (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun uri-display (uriS-p &optional (out *standard-output*))
   (cond ((uri-structure-p uriS-p)
@@ -100,7 +100,7 @@
 				(uri-structure-fragment uriS-p)
 		    )
 		 )
-        (T (error "Il parametro deve essere una uri-structure"))))
+        (T (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun parse-mailto (scheme)
   (let* ((ui (parse-userinfo2 scheme))
