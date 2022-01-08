@@ -1,1 +1,3 @@
 open e close fuori da uri_display
+
+controlla se id8 vuole un carattere alfabetico come primo carattere

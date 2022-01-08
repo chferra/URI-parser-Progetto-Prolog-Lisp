@@ -158,7 +158,7 @@
   (let* ((id44 (parse-id44 s)))
     (cond ((null (car id44)) nil)
           ((eql (car (second id44)) #\()
-           (let ((id8 (caratteriAN (cdr (second id44)))))
+           (let ((id8 (parse-id8 (cdr (second id44)))))
              (cond ((and (eql (car (second id8)) #\))
                          (not (null (car id8)))
                          (<= (length (car id8)) 8))
@@ -173,6 +173,10 @@
           (T (list
               (chrl-to-string (car id44))
               (second id44))))))
+
+(defun parse-id8 (s)
+  (cond ((alpha-char-p (car s))
+         (caratteriAN s))))
 
 (defun parse-id44 (s)
   (cond ((and (not (null s))
