@@ -168,8 +168,9 @@ id44([X|Xs], Rest, Result) :-
 						string_length(Result, Ln),
 						between(1, 44, Ln).
 
-id8(X, Rest, Result) :-
-						caratteriAN(X, Rest, Result),
+id8([X|Xs], Rest, Result) :-
+						carattereAlfabetico(X),
+						caratteriAN([X|Xs], Rest, Result),
 						string_length(Result, Ln),
 						between(1, 8, Ln).
 
