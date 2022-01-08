@@ -2,7 +2,6 @@
 
 %%%% uri_parse.pl
 
-
 %uri(S, UI, H, Port, Path, Q, F).
 %inputTxt(T, Rest, Result) :- string_chars(T, L), path(L, Rest, Result).
 
@@ -254,10 +253,9 @@ uri_display(uri(S, UI, H, Port, Path, Q, F)) :-
 						multi_write(['Query: ', Q]),
 						multi_write(['Fragment: ', F]).
 
-uri_display(uri(S, UI, H, Port, Path, Q, F), Stream) :-
+uri_display(uri(S, UI, H, Port, Path, Q, F), StreamAlias) :-
 						current_output(O),
-						open(Stream, append, StreamId),
-						set_output(StreamId),
+						set_output(StreamAlias),
 						writeln('URI display:'),
 						multi_write(['\tSchema: ', S]),
 						multi_write(['\tUserInfo: ', UI]),
@@ -266,8 +264,7 @@ uri_display(uri(S, UI, H, Port, Path, Q, F), Stream) :-
 						multi_write(['\tPath: ', Path]),
 						multi_write(['\tQuery: ', Q]),
 						multi_write(['\tFragment: ', F]),
-						set_output(O),
-						close(StreamId).
+						set_output(O).
 
 multi_write(Terms) :-
 						atomics_to_string(Terms, Res),

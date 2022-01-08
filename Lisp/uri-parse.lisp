@@ -368,8 +368,8 @@
   (caratteri x '(#\. #\/ #\? #\# #\@ #\:)))
 
 (defun doubleSlashT (l)
-  (and (char= (first l) (second l))
-       (char= (first l) #\/)))
+  (and (equal (first l) (second l))
+       (equal (first l) #\/)))
 
 (defun caratteri (chrs filtri)
   (let ((i (car chrs))
