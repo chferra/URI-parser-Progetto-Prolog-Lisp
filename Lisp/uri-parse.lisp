@@ -87,20 +87,23 @@
 
 (defun uri-display (uriS-p &optional (out *standard-output*))
   (cond ((uri-structure-p uriS-p)
-        (format out (concatenate 'string "URI display: ~%     Schema: ~S~%"
-							"     Userinfo: ~S~%     Host: ~S~%"
-							"     Port: ~S~%     Path: ~S~%"
-							"     Query: ~S~%     Fragment: ~S~%") 
-		        (uri-structure-scheme uriS-p)
-				(uri-structure-userinfo uriS-p)
-				(uri-structure-host uriS-p)
-				(uri-structure-port uriS-p)
-				(uri-structure-path uriS-p)
-				(uri-structure-query uriS-p)
-				(uri-structure-fragment uriS-p)
-		    )
-		)
-        (T (error "Il parametro deve essere una uri-structure valida"))))
+         (format out (concatenate 'string "URI display: ~%" 
+                                  (string #\tab) "Schema: ~S~%"
+                                  (string #\tab) "Userinfo: ~S~%"
+                                  (string #\tab) "Host: ~S~%"
+                                  (string #\tab) "Port: ~S~%"
+                                  (string #\tab) "Path: ~S~%"
+                                  (string #\tab) "Query: ~S~%"
+                                  (string #\tab) "Fragment: ~S~%") 
+                (uri-structure-scheme uriS-p)
+                (uri-structure-userinfo uriS-p)
+                (uri-structure-host uriS-p)
+                (uri-structure-port uriS-p)
+                (uri-structure-path uriS-p)
+                (uri-structure-query uriS-p)
+                (uri-structure-fragment uriS-p)) T)
+        (T 
+         (error "Il parametro deve essere una uri-structure valida"))))
 
 (defun parse-mailto (scheme)
   (let* ((ui (parse-userinfo2 scheme))
