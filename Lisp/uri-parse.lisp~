@@ -201,7 +201,7 @@
 
 (defun parse-scheme (l)
   (let ((res (identificatore l)))
-    (cond ((and (> (length (car res)) 0)
+    (cond ((and (> (length res) 0)
                 (char= (first (second res)) #\:))
            (list (chrl-to-string (first res)) (cdr (second res)))))))
 
