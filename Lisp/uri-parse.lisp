@@ -7,13 +7,6 @@
   query
   fragment)
 
-(defparameter gen-delims
-  (list #\: #\/ #\? #\# #\[ #\] #\@))
-(defparameter sub-delims
-  (list #\! #\$ #\& #\' #\( #\) #\* #\+ #\, #\; #\=))
-(defparameter unres-symb
-  (list #\- #\. #\_ #\~))
-
 (defun uri-parse (s)
   (let* ((charList (coerce s 'list))
          (scheme (parse-scheme charList)))
@@ -87,14 +80,14 @@
                                   (string #\tab) "Port: ~S~%"
                                   (string #\tab) "Path: ~S~%"
                                   (string #\tab) "Query: ~S~%"
-                                  (string #\tab) "Fragment: ~S~%") 
-                (uri-structure-scheme uriS-p)
-                (uri-structure-userinfo uriS-p)
-                (uri-structure-host uriS-p)
-                (uri-structure-port uriS-p)
-                (uri-structure-path uriS-p)
-                (uri-structure-query uriS-p)
-                (uri-structure-fragment uriS-p)) T)))
+                                  (string #\tab) "Fragment: ~S~%")
+                 (uri-structure-scheme uriS-p)
+                 (uri-structure-userinfo uriS-p)
+                 (uri-structure-host uriS-p)
+                 (uri-structure-port uriS-p)
+                 (uri-structure-path uriS-p)
+                 (uri-structure-query uriS-p)
+                 (uri-structure-fragment uriS-p)) T)))
 
 (defun parse-mailto (scheme)
   (let* ((ui (parse-userinfo2 scheme))
@@ -372,13 +365,7 @@
     (cond ((or (null i)
                (member i filtri))
            (list nil chrs))
-          ((or
-            (alphanumericp i) ;unreserved
-            (member i unres-symb)
-            (member i gen-delims) ;reserved
-            (member i sub-delims)
-            (eql i #\Space))
-           (let ((res (caratteri (cdr chrs) filtri)))
+          ((let ((res (caratteri (cdr chrs) filtri)))
              (cond ((eql i #\Space)
                     (list (append (list #\% #\2 #\0) (car res)) (second res)))
                    (T

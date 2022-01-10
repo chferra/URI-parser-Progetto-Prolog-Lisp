@@ -1,6 +1,6 @@
 ;; Considero path in zos sempre obbligatorio
 
-(load "C:\\Users\\Chris\\Desktop\\uri-parse.lisp")
+(load "C:\\Users\\Chris\\OneDrive\\università\\secondo anno\\Linguaggi di programmazione\\Progetto\\ProgettoPrologLisp\\Lisp\\uri-parse.lisp")
 
 (defparameter passed 0)   ; test passati
 (defparameter failed 0)   ; test falliti
