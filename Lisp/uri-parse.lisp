@@ -1,3 +1,7 @@
+;;;; -*- Mode: Lisp -*-
+
+;;;; uri_parse.lisp
+
 (defstruct uri-structure
   scheme
   userinfo
@@ -393,3 +397,5 @@
          (let ((ds (digits (cdr d))))
            (list (append (list (car d)) (car ds)) (second ds))))
         (T (list nil d))))
+
+;;;; end of file -- uri_parse.lisp
