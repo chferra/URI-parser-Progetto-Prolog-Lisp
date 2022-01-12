@@ -54,6 +54,7 @@ authority(['/','/'|Xs], Rest, UI, H, 80) :-
 authority(['/','/'|Xs], Rest, [], H, P) :-
 						host(Xs, false, RestH, H),
 						port(RestH, Rest, P), !.
+						
 authority(Rest, Rest, [], [], 80).
 
 userinfo(X, _, Rest, Result) :-
@@ -78,7 +79,7 @@ path(X, true, Rest, Result) :-
 						atomic_concat(RRes8, ')', RRes8R),
 						atomic_concat(Res44, RRes8R, Result).
 path(X, true, Rest, Result) :-
-						id44(X, Rest, Result), !.
+						id44(X, Rest, Result), !.				
 path(X, false, Rest, Result) :-
 						identificatore(X, Rest, Result), !.
 path(Rest, false, Rest, []).
