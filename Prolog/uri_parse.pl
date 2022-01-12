@@ -193,31 +193,14 @@ carattereAN(C) :-
 caratteri([' '|Cs], Rest, Result, Filtri) :-
 						caratteri(Cs, Rest, R, Filtri), !,
 						atomic_concat('%20', R, Result).
-						caratteri([C|Cs], Rest, Result, Filtri) :-
+
+caratteri([C|Cs], Rest, Result, Filtri) :-
 						non_member(C,Filtri),
-						carattere(C),
 						caratteri(Cs, Rest, R, Filtri), !,
 						atomic_concat(C, R, Result).
 caratteri([' '|Cs], Cs, '%20', _) :- !.
 caratteri([C|Rest], Rest, C, Filtri) :-
-						non_member(C,Filtri),
-						carattere(C), !.
-
-carattere(C) :-
-						reserved(C), !.
-carattere(C) :-
-						unreserved(C), !.
-
-%gen-delims
-reserved(C) :-
-						member(C, [':','/','?','#','[',']','@']).
-%sub-delims
-reserved(C) :-
-						member(C, ['!','$','&','\'','(',')','*','+',',',';','=']).
-
-unreserved(C) :- digit(C), !.
-unreserved(C) :- carattereAlfabetico(C), !.
-unreserved(C) :- member(C, ['-','.','_','~']), !.
+						non_member(C,Filtri), !.
 
 carattereAlfabetico(C) :- lower_az(C), !.
 carattereAlfabetico(C) :- upper_az(C), !.
@@ -246,29 +229,36 @@ non_member(X, [_|Xs]) :- !, non_member(X, Xs).
 non_member(_, []).
 
 uri_display(uri(S, UI, H, Port, Path, Q, F)) :-
-						multi_write(['Schema: ', S]),
-						multi_write(['UserInfo: ', UI]),
-						multi_write(['Host: ', H]),
-						multi_write(['Port: ', Port]),
-						multi_write(['Path: ', Path]),
-						multi_write(['Query: ', Q]),
-						multi_write(['Fragment: ', F]).
+						multi_writeln(['Schema: ', S]),
+						multi_writeln(['UserInfo: ', UI]),
+						multi_writeln(['Host: ', H]),
+						multi_writeln(['Port: ', Port]),
+						multi_writeln(['Path: ', Path]),
+						multi_writeln(['Query: ', Q]),
+						multi_writeln(['Fragment: ', F, '\n']).
 
 uri_display(uri(S, UI, H, Port, Path, Q, F), StreamAlias) :-
-						current_output(O),
-						set_output(StreamAlias),
-						writeln('URI display:'),
-						multi_write(['\tSchema: ', S]),
-						multi_write(['\tUserInfo: ', UI]),
-						multi_write(['\tHost: ', H]),
-						multi_write(['\tPort: ', Port]),
-						multi_write(['\tPath: ', Path]),
-						multi_write(['\tQuery: ', Q]),
-						multi_write(['\tFragment: ', F]),
-						set_output(O).
+						writeln(StreamAlias, 'URI display:'),
+						multi_writeln(StreamAlias, ['\tSchema: ', S]),
+						multi_writeln(StreamAlias, ['\tUserInfo: ', UI]),
+						multi_writeln(StreamAlias, ['\tHost: ', H]),
+						multi_writeln(StreamAlias, ['\tPort: ', Port]),
+						multi_writeln(StreamAlias, ['\tPath: ', Path]),
+						multi_writeln(StreamAlias, ['\tQuery: ', Q]),
+						multi_writeln(StreamAlias, ['\tFragment: ', F, '\n']).
 
-multi_write(Terms) :-
-						atomics_to_string(Terms, Res),
-						writeln(Res).
+multi_writeln([T]) :-
+						writeln(T), !.
+
+multi_writeln([T | Terms]) :-
+						write(T),
+						multi_writeln(Terms).
+						
+multi_writeln(StreamAlias, [T]) :-
+						writeln(StreamAlias, T), !.		
+						
+multi_writeln(StreamAlias, [T | Terms]) :-
+						write(StreamAlias, T),
+						multi_writeln(StreamAlias, Terms).
 
 %%%% end of file -- uri_parse.pl

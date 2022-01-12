@@ -119,8 +119,7 @@
 (defun parse-zos (scheme)
   (let* ((auth (parse-auth (second scheme)))
          (zpqf (parse-zpqf (fourth auth))))
-    (cond ((and (not (null zpqf))
-                (null (fourth zpqf)))
+    (cond ((null (fourth zpqf))
            (make-uri-structure
             :scheme (first scheme)
             :userinfo (first auth)
@@ -131,7 +130,8 @@
             :fragment (third zpqf))))))
 
 (defun parse-zpqf (s)
-  (cond ((eql (car s) #\/)
+  (cond ((and (not (null s))
+              (eql (car s) #\/))
          (let ((zpath (parse-zos-path (cdr s))))
            (cond ((not (null zpath))
                   (let* ((query (parse-query (second zpath)))
@@ -140,7 +140,9 @@
                      (chrl-to-string (first zpath))
                      (chrl-to-string (first query))
                      (chrl-to-string (first frgmt))
-                     (second frgmt)))))))))
+                     (second frgmt))))
+                 (T (list nil nil nil s)))))
+         (T (list nil nil nil s))))
 
 (defun parse-zos-path (s)
   (let* ((id44 (parse-id44 s)))
