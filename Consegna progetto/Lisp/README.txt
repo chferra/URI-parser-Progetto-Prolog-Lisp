@@ -1,10 +1,10 @@
 La soluzione adottata presenta alcune peculiarità derivanti dalla nostra personale interpretazione della traccia che intendiamo chiarire in questo file di testo.
 
 1)	La logica dietro alla nostra implementazione è quella di costruire un parser lineare, che legge carattere dopo carattere e ne 
-	intepreta la validità. Ciascuno "stato" (scheme, userinfo, host, port, path, query, fragment) cerca di estrapolare dalla stringa passata ciò che riesce riconosce come proprio, poi inoltra il resto della stringa allo "stato" successivo. L'ultimo "stato" si occuperà inoltre di controllare che la stringa ricevuta, a seguito alla sua elaborazione, sia vuota. In caso contrario vorrà dire che una certa sequenza di caratteri della stringa non sarà stata accettata (e quindi estrapolata) da alcuno stato e perciò la stringa totale non si tratta di una URI valida.
+	stabilisce la validità. Ciascuno "stato" (scheme, userinfo, host, port, path, query, fragment) cerca di estrapolare dalla stringa passata ciò che riesce a riconoscere come proprio, poi inoltra il resto della stringa allo "stato" successivo. L'ultimo "stato" si occuperà, tra l'altro, di controllare che la stringa ricevuta, a seguito alla sua elaborazione, sia vuota. In caso contrario vorrà dire che una certa sequenza di caratteri della stringa non sarà stata accettata (e quindi estrapolata) da alcuno stato e perciò la stringa totale non si tratta di una URI valida.
 	
 2)	Le funzioni uri-parse fungono da 'root', contenendo tutte le chiamate alle funzioni che estrapolano dalla stringa "la 	
- 	propria parte" e convogliando il resto della stringa scartata dalla funzione precedente verso la funzione successiva.
+ 	propria parte" e convogliando il resto della stringa scartata dalla funzione precedente verso quella successiva.
 
 3) 	Tutti i caratteri previsti dalla tabella ASCII (salvo quelli eventualmente non supportati dall'interprete Lisp) sono
 	da considerarsi accettabili. Perciò non sono previsti ulteriori "filtri" sui caratteri ammessi se non quelli specificati dalla traccia.
