@@ -1,3 +1,6 @@
+%Christian Ferrareis 868974
+%Davide Cattaneo 873245
+
 %%%% -*- Mode: Prolog -*-
 
 %%%% uri_parse.pl
@@ -105,26 +108,27 @@ host(X, _, Rest, Result) :-
 host(Rest, true, Rest, []).
 
 countGroup(['.' | X], Rest, Result, Ngr) :-
+						Ngr > 1,
 						digits(X, RestD, D),
 						atom_number(D, Num),
-						between(0, 255, Num), !,
-						countGroup(RestD, Rest, Ds, N),
+						between(0, 255, Num),
+						N is Ngr - 1,
+						countGroup(RestD, Rest, Ds, N), !,
 						atomic_concat('.', D, DotD),
-						atomic_concat(DotD, Ds, Result),
-						Ngr is N + 1,
-						Ngr > 0, !.
+						atomic_concat(DotD, Ds, Result).
 countGroup(X, Rest, Result, Ngr) :-
+						Ngr > 1,
 						digits(X, RestD, D),
 						atom_number(D, Num),
-						between(0, 255, Num), !,
-						countGroup(RestD, Rest, Ds, N),
-						Ngr is N + 1,
-						atomic_concat(D, Ds, Result),
-						Ngr > 0, !.
-countGroup(X, Rest, Result, 0) :-
+						between(0, 255, Num),
+						N is Ngr - 1,
+						countGroup(RestD, Rest, Ds, N), !,
+						atomic_concat(D, Ds, Result).
+countGroup(['.' | X], Rest, Result, 1) :-
 						digits(X, Rest, D),
-						atom_number(D, Result),
-						between(0, 255, Result), !.
+						atom_number(D, Oct),
+						between(0, 255, Oct),
+						atomic_concat('.', Oct, Result).
 
 identificatori_host(['.' | Xs], Rest, Result) :-
 						identificatore_host(Xs, RestI, I),
