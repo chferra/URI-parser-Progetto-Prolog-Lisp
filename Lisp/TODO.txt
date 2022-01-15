@@ -1,5 +1,0 @@
-readme:
-- caratteri accettati
-- spazi gestiti
-- nil controlli
-- path zos

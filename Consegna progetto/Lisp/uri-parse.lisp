@@ -1,9 +1,9 @@
-;Christian Ferrareis 868974
-;Davide Cattaneo 873245
+;; Christian Ferrareis 868974
+;; Davide Cattaneo 873245
 
 ;;;; -*- Mode: Lisp -*-
 
-;;;; uri_parse.lisp
+;;;; uri-parse.lisp
 
 (defstruct uri-structure
   scheme
@@ -403,4 +403,4 @@
            (list (append (list (car d)) (car ds)) (second ds))))
         (T (list nil d))))
 
-;;;; end of file -- uri_parse.lisp
+;;;; end of file -- uri-parse.lisp
