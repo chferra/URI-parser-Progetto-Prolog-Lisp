@@ -3,7 +3,7 @@
 
 %%%% -*- Mode: Prolog -*-
 
-%%%% uri_parse.pl
+%%%% uri-parse.pl
 
 uri_parse(L, uri(S, UI, H, Port, Path, Q, F)) :-
 						string_chars(L, URI),
@@ -269,5 +269,5 @@ multi_writeln(StreamAlias, [T | Terms]) :-
 						write(StreamAlias, T),
 						multi_writeln(StreamAlias, Terms).
 
-%%%% end of file -- uri_parse.pl
+%%%% end of file -- uri-parse.pl
 %
